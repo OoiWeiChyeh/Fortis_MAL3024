@@ -67,39 +67,49 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "  [..] Installing the local AI engine (llama.cpp, ~200 MB)..."
     $ok = $false
 
+    # Native exit codes always land in $global:LASTEXITCODE; read it explicitly so a
+    # script-scoped variable can never shadow the real result.
     function Test-LlamaImport {
         Invoke-Native { & $venvPy -c "import llama_cpp" 2>$null } | Out-Null
-        return ($LASTEXITCODE -eq 0)
+        return ($global:LASTEXITCODE -eq 0)
     }
 
-    if (Test-Path "$venvPy") {
-        & $venvPy -m pip uninstall --disable-pip-version-check --yes llama_cpp_python 2>$null | Out-Null
-        $LASTEXITCODE = 0
+    # pip writes "WARNING: Skipping ... not installed" to stderr; under PS 5.1 with
+    # ErrorActionPreference=Stop a redirected stderr line is a terminating error,
+    # so this must run through Invoke-Native.
+    function Remove-Llama {
+        Invoke-Native { & $venvPy -m pip uninstall --disable-pip-version-check --yes llama_cpp_python 2>&1 } | Out-Null
+        $global:LASTEXITCODE = 0
     }
+
+    function Install-Llama {
+        param([string[]]$PipArgs)
+        Invoke-Native { & $venvPy -m pip install --disable-pip-version-check --quiet @PipArgs }
+    }
+
+    if (Test-Path "$venvPy") { Remove-Llama }
 
     if ($hasNvidia) {
         Write-Host "       NVIDIA GPU detected - trying the CUDA wheel first..."
-        & $venvPy -m pip install --disable-pip-version-check --quiet --only-binary :all: llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+        Install-Llama @("--only-binary", ":all:", "llama-cpp-python", "--extra-index-url", "https://abetlen.github.io/llama-cpp-python/whl/cu124")
         if ((Test-LlamaImport)) { $ok = $true }
         if ($ok) {
             New-Item -ItemType File -Path $marker -Force | Out-Null
             Write-Host "  [ok] Engine installed (GPU-accelerated)"
         } else {
             Write-Host "       CUDA wheel failed to install or import - cleaning up and trying the CPU wheel..."
-            & $venvPy -m pip uninstall --disable-pip-version-check --yes llama_cpp_python 2>$null | Out-Null
-            $LASTEXITCODE = 0
+            Remove-Llama
         }
     }
     if (-not $ok) {
         Write-Host "       Trying the prebuilt CPU wheel (llama.cpp CPU index)..."
-        & $venvPy -m pip install --disable-pip-version-check --quiet --only-binary :all: llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+        Install-Llama @("--only-binary", ":all:", "llama-cpp-python", "--extra-index-url", "https://abetlen.github.io/llama-cpp-python/whl/cpu")
         if ((Test-LlamaImport)) { $ok = $true }
         if ($ok) {
             Write-Host "  [ok] Engine installed (CPU)"
         } else {
             Write-Host "       CPU wheel unavailable - cleaning up and trying PyPI (may build from source)..."
-            & $venvPy -m pip uninstall --disable-pip-version-check --yes llama_cpp_python 2>$null | Out-Null
-            $LASTEXITCODE = 0
+            Remove-Llama
         }
     }
     if (-not $ok) {
@@ -114,7 +124,7 @@ if ($LASTEXITCODE -ne 0) {
         } catch {}
         if ($hasMsvc) {
             Write-Host "       No prebuilt wheel - compiling from source with the detected MSVC toolchain (needs CMake+nmake)..."
-            & $venvPy -m pip install --disable-pip-version-check --quiet llama-cpp-python
+            Install-Llama @("llama-cpp-python")
             if ((Test-LlamaImport)) { $ok = $true }
         }
         if ($ok) {
