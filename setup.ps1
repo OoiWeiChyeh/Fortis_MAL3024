@@ -97,6 +97,12 @@ if ($LASTEXITCODE -ne 0) {
             New-Item -ItemType File -Path $marker -Force | Out-Null
             Write-Host "  [ok] Engine installed (GPU-accelerated)"
         } else {
+            $cudaRt = Get-Command cudart64_12.dll -ErrorAction SilentlyContinue
+            if (-not $cudaRt) {
+                Write-Host "       CUDA wheel cannot load: CUDA 12 runtime (cudart64_12.dll) not found on PATH." -ForegroundColor Yellow
+                Write-Host "       (Install the NVIDIA CUDA Toolkit 12.x to enable it. Note the newest prebuilt CUDA wheel" -ForegroundColor Yellow
+                Write-Host "        is llama-cpp-python 0.3.4, which predates Qwen3.5 GGUF support.)" -ForegroundColor Yellow
+            }
             Write-Host "       CUDA wheel failed to install or import - cleaning up and trying the CPU wheel..."
             Remove-Llama
         }
