@@ -383,3 +383,16 @@ def test_model_status_endpoint_exposes_hardware_fields():
         assert key in data
     assert hw["offload"] in ("full", "partial", "cpu", "unknown")
     assert hw["backend_wheel"] in ("cuda", "cpu", "none")
+
+
+def test_stale_cuda_marker_is_ignored_on_a_cpu_build(monkeypatch):
+    # field report: setup wrote .llama-cuda-ok whenever llama_cpp was already
+    # installed, so a CPU build carried the marker and got n_gpu_layers=915
+    from engine import hardware
+    monkeypatch.setattr(hardware.os.path, "exists", lambda p: True)
+    monkeypatch.setattr(hardware, "llama_gpu_offload_supported", lambda: False)
+    assert hardware.cuda_marker_exists() is False
+    monkeypatch.setattr(hardware, "llama_gpu_offload_supported", lambda: True)
+    assert hardware.cuda_marker_exists() is True
+    monkeypatch.setattr(hardware, "llama_gpu_offload_supported", lambda: None)  # unknown: trust the marker
+    assert hardware.cuda_marker_exists() is True

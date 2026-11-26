@@ -236,6 +236,31 @@ dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18
 .tier-opt .t-name { font-weight: 600; font-size: 14px; }
 .tier-opt .t-desc { color: var(--muted); font-size: 12px; }
 .tier-opt .t-size { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.tier-opt .t-body { display: block; min-width: 0; }
+.tier-opt .t-meta { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; margin-top: 4px; }
+.tier-opt .t-action { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; white-space: nowrap; }
+.tier-opt .t-cta { font-size: 12px; font-weight: 600; color: var(--accent-ink); }
+.tier-opt[aria-pressed="true"] .t-cta { color: var(--ok); }
+.tier-opt[aria-busy="true"] .t-cta::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px;
+  border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; }
+@media (prefers-reduced-motion: no-preference) {
+  .tier-opt[aria-busy="true"] .t-cta::before { animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+}
+.chip { font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+.fit { font-size: 11px; color: var(--muted); }
+.fit.too-large { color: var(--warn); }
+.fit::before { content: '● '; }
+.fit.gpu::before { color: var(--ok); } .fit.partial::before, .fit.cpu::before { color: var(--accent-ink); }
+.fit.too-large::before { content: '⚠ '; }
+.tier-hint { font-size: 12px; color: var(--muted); margin: -2px 0 8px; }
+#model-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
+#model-filter button { font-size: 12px; padding: 5px 11px; border-radius: 999px; }
+#model-filter button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent-hi); color: #fff; }
+#dl-status.is-error { color: var(--err); }
+@media (forced-colors: active) {
+  .tier-opt[aria-pressed="true"], #model-filter button[aria-pressed="true"] { outline: 2px solid Highlight; }
+}
 #dl-progress { height: 6px; background: var(--bg3); border-radius: 4px; overflow: hidden; margin-top: 10px; display: none; }
 #dl-progress > div { height: 100%; background: linear-gradient(90deg, var(--accent), #38bdf8); width: 0%; }
 #dl-status { font-size: 12px; color: var(--muted); margin-top: 6px; display: none; }
@@ -385,6 +410,13 @@ dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18
   </div>
   <div id="hw-line" style="color:var(--muted);font-size:12px;margin-bottom:12px"></div>
   <div id="hw-status-line" style="color:var(--muted);font-size:12px;margin:-4px 0 12px;display:none"></div>
+  <div id="model-filter" role="group" aria-label="Show models for">
+    <button type="button" data-role="" aria-pressed="true">All</button>
+    <button type="button" data-role="chat" aria-pressed="false">Chat</button>
+    <button type="button" data-role="grc" aria-pressed="false">GRC</button>
+    <button type="button" data-role="code" aria-pressed="false">Code</button>
+    <button type="button" data-role="osint" aria-pressed="false">OSINT / CTI</button>
+  </div>
   <div id="tier-list"></div>
   <div id="dl-progress" role="progressbar" aria-label="Model download progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div></div></div>
   <div id="dl-status" role="status" aria-live="polite"></div>
@@ -966,66 +998,196 @@ $('model-btn').onclick = async () => {
   dlgModel.showModal();
 };
 
+const ROLE_NAMES = { chat: 'Chat', grc: 'GRC', code: 'Code', osint: 'OSINT', cti: 'CTI' };
+let modelRoleFilter = '';
+try { modelRoleFilter = localStorage.getItem('fortis.modelRole') || ''; } catch { /* storage blocked: default */ }
+let modelBusy = false;
+
+function dlStatus(msg, isErr = false) {
+  const el = $('dl-status');
+  el.style.display = msg ? 'block' : 'none';
+  el.textContent = msg ? (isErr ? 'Error: ' + msg : msg) : '';
+  el.classList.toggle('is-error', !!isErr);
+}
+
+function roleMatches(roles) {
+  if (!modelRoleFilter) return true;
+  const want = modelRoleFilter === 'osint' ? ['osint', 'cti'] : [modelRoleFilter];
+  return (roles || []).some(r => want.includes(r));
+}
+
+function recommendedFor(tierId, suggestedTiers) {
+  return Object.entries(suggestedTiers || {}).filter(([, id]) => id === tierId).map(([role]) => ROLE_NAMES[role] || role);
+}
+
+// one row = one real button; everything a screen reader needs is its text
+function modelButton({ key, title, roles, rec, active, loaded, fit, note, size, cta, disabled, reason }) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'tier-opt';
+  b.dataset.key = key;
+  if (active !== undefined) b.setAttribute('aria-pressed', active ? 'true' : 'false');
+  if (disabled) { b.setAttribute('aria-disabled', 'true'); b.title = reason || ''; }
+  const chips = (roles || []).map(r => `<span class="chip">${esc(ROLE_NAMES[r] || r)}</span>`).join('');
+  b.innerHTML = `
+    <span class="t-body">
+      <span class="t-name">${esc(title)}</span>
+      ${rec.length ? `<span class="tag rec">Recommended${rec.length < 4 ? ' · ' + esc(rec.join(', ')) : ''}</span>` : ''}
+      ${active ? `<span class="tag on">${loaded ? 'active · loaded' : 'active'}</span>` : ''}
+      <span class="t-meta">${chips}<span class="fit ${esc(fit || '')}">${esc(note || '')}</span></span>
+    </span>
+    <span class="t-action"><span class="t-cta">${esc(cta)}</span><span class="t-size">${esc(String(size))} GB</span></span>`;
+  return b;
+}
+
 async function refreshModelDialog() {
   const st = await api('/api/model/status');
   hw = st.hardware; tiers = st.tiers;
   hardwareInfo = st.hardware || null;
   const suggestedTiers = st.suggested_tiers || {};
   const suggestedChat = suggestedTiers.chat || st.suggested_tier;
-  $('hw-line').textContent = `Detected: ${hw.vram_gb > 0 ? hw.vram_gb + ' GB VRAM' : 'no NVIDIA GPU'} · ${hw.ram_gb} GB RAM → suggested: ${suggestedChat}`;
+  $('hw-line').textContent = `Detected: ${hw.vram_gb > 0 ? hw.vram_gb + ' GB VRAM' : 'no NVIDIA GPU'} · ${hw.ram_gb} GB RAM`
+    + (hw.can_cuda ? ' · GPU engine' : ' · CPU engine') + ` → suggested: ${suggestedChat}`;
   renderHardwareStatusLine(st.hardware);
+  document.querySelectorAll('#model-filter button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.role === modelRoleFilter)));
+
   const list = $('tier-list');
+  const focusedKey = document.activeElement && list.contains(document.activeElement) ? document.activeElement.dataset.key : null;
   list.innerHTML = '';
-  const roleGroups = [
-    { key: 'chat', label: 'Chat & analysis', roles: ['general'] },
-    { key: 'grc', label: 'GRC policy review', roles: ['grc'] },
-    { key: 'code', label: 'Code review', roles: ['code'] },
-    { key: 'osint', label: 'OSINT / CTI', roles: ['osint', 'cti'] },
-  ];
-  for (const group of roleGroups) {
-    const groupHeader = document.createElement('h4');
-    groupHeader.className = 'tier-group';
-    groupHeader.textContent = group.label;
-    list.appendChild(groupHeader);
-    const groupTiers = Object.entries(tiers).filter(([id, t]) => {
-      if (!t.roles || !Array.isArray(t.roles)) return false;
-      return t.roles.some(r => group.roles.includes(r));
+  list.setAttribute('aria-busy', String(modelBusy));
+
+  // ---- installed models: one click loads them now
+  const allLocal = st.local_models || [];
+  const rank = m => (m.active ? 0 : 2) - (m.tier && recommendedFor(m.tier, suggestedTiers).length ? 1 : 0);
+  const local = allLocal.filter(m => !m.roles.length ? !modelRoleFilter : roleMatches(m.roles))
+    .sort((a, b) => rank(a) - rank(b) || a.size_gb - b.size_gb);
+  const h1 = document.createElement('h4');
+  h1.className = 'tier-group';
+  h1.textContent = modelRoleFilter ? `On this machine (${local.length} of ${allLocal.length})` : `On this machine (${allLocal.length})`;
+  list.appendChild(h1);
+  const hint = document.createElement('p');
+  hint.className = 'tier-hint';
+  hint.textContent = local.length ? 'Choose a model to load it now; the next message answers straight away.'
+    : (st.local_models || []).length ? 'No installed model matches this filter.' : 'Nothing downloaded yet — pick one below.';
+  list.appendChild(hint);
+  for (const m of local) {
+    const ready = m.active && m.loaded;
+    const b = modelButton({
+      key: 'local:' + m.path, title: m.label, roles: m.roles, rec: m.tier ? recommendedFor(m.tier, suggestedTiers) : [],
+      active: m.active, loaded: m.loaded, fit: m.fit, note: m.note, size: m.size_gb,
+      cta: ready ? 'Ready ✓' : m.active ? 'Load now' : 'Use this model',
+      disabled: modelBusy && !ready,
     });
-    if (!groupTiers.length) {
-      const empty = document.createElement('div');
-      empty.style.cssText = 'color:var(--muted);font-size:12px;padding:6px 0';
-      empty.textContent = 'No tiers available for this role.';
-      list.appendChild(empty);
-      continue;
-    }
-    for (const [id, t] of groupTiers) {
-      // real buttons: the old clickable <div>s were unreachable by keyboard
-      const div = document.createElement('button');
-      div.type = 'button';
-      const isRec = suggestedTiers[group.key] === id;
-      const isDisabled = t.min_vram_gb > 0 && hw.vram_gb < t.min_vram_gb;
-      div.className = 'tier-opt' + (isDisabled ? ' disabled' : '');
-      div.setAttribute('aria-pressed', t.active ? 'true' : 'false');
-      if (isDisabled) {
-        div.setAttribute('aria-disabled', 'true');
-        div.title = `Needs about ${t.min_vram_gb} GB of GPU memory`;
-      }
-      div.innerHTML = `
-        <span><span class="t-name">${esc(t.label)}
-          ${isRec ? '<span class="tag rec">Recommended</span>' : ''}
-          ${t.active ? '<span class="tag on">active</span>' : ''}
-        </span>
-        <span class="t-desc" style="display:block">${t.downloaded ? 'downloaded ✓' : 'will download from Hugging Face'}${isDisabled ? ' · needs more GPU memory' : ''}</span></span>
-        <span class="t-size">${esc(String(t.size_gb))} GB</span>`;
-      div.onclick = () => pickTier(id, t, div, isDisabled);
-      list.appendChild(div);
-    }
+    b.onclick = () => useModel(m, b);
+    list.appendChild(b);
   }
-  if (st.active_model) {
-    const p = document.createElement('div');
-    p.style.cssText = 'font-size:11px;color:var(--muted);margin-top:8px';
-    p.textContent = 'Active file: ' + st.active_model.split(/[\\\\/]/).pop();
+
+  // ---- catalogue tiers not on disk yet
+  const avail = Object.entries(tiers).filter(([, t]) => !t.downloaded && roleMatches(t.roles));
+  const h2 = document.createElement('h4');
+  h2.className = 'tier-group';
+  h2.textContent = 'Available to download';
+  list.appendChild(h2);
+  if (!avail.length) {
+    const p = document.createElement('p');
+    p.className = 'tier-hint';
+    p.textContent = 'Every model for this filter is already downloaded.';
     list.appendChild(p);
+  }
+  const downloading = !!st.downloading;
+  for (const [id, t] of avail) {
+    const tooBig = t.fit === 'too-large';
+    const b = modelButton({
+      key: 'tier:' + id, title: t.label, roles: t.roles, rec: recommendedFor(id, suggestedTiers),
+      fit: t.fit, note: t.note, size: t.size_gb, cta: tooBig ? 'Too large' : 'Download & use',
+      disabled: tooBig || modelBusy || downloading, reason: tooBig ? t.note : '',
+    });
+    b.onclick = () => downloadTier(id, t, b);
+    list.appendChild(b);
+  }
+
+  if (focusedKey) {
+    const again = [...list.querySelectorAll('button')].find(x => x.dataset.key === focusedKey);
+    if (again) again.focus();
+  }
+}
+
+document.querySelectorAll('#model-filter button').forEach(b => {
+  b.onclick = async () => {
+    modelRoleFilter = b.dataset.role;
+    try { localStorage.setItem('fortis.modelRole', modelRoleFilter); } catch { /* per-viewer nicety only */ }
+    await refreshModelDialog();
+  };
+});
+
+async function useModel(m, btn) {
+  if (modelBusy) return;
+  if (m.active && m.loaded) { dlStatus(`${m.label} is already loaded and ready.`); return; }
+  modelBusy = true;
+  btn.setAttribute('aria-busy', 'true');
+  btn.querySelector('.t-cta').textContent = 'Loading…';
+  $('tier-list').setAttribute('aria-busy', 'true');
+  dlStatus(`Loading ${m.label}… (a few seconds on CPU)`);
+  try {
+    const r = await api('/api/model/load', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: m.path }),
+    });
+    dlStatus(`${m.label} is ready${r.seconds ? ` (loaded in ${r.seconds} s)` : ''}. Ask away.`);
+    status(`Model: ${m.label} — ready.`);
+  } catch (e) {
+    dlStatus(`Could not load ${m.label}: ${e.message}`, true);
+  } finally {
+    modelBusy = false;
+    await refreshModelDialog();
+    await refreshHealth();
+  }
+}
+
+async function downloadTier(id, t, btn) {
+  if (btn.getAttribute('aria-disabled') === 'true') {
+    dlStatus(t.fit === 'too-large' ? `${t.label}: ${t.note}.` : 'Another model is loading or downloading — wait for it to finish.', t.fit === 'too-large');
+    return;
+  }
+  modelBusy = true;
+  btn.setAttribute('aria-busy', 'true');
+  btn.querySelector('.t-cta').textContent = 'Downloading…';
+  $('dl-progress').style.display = 'block';
+  dlStatus(`Downloading ${t.label} (${t.size_gb} GB, resumable)…`);
+  try {
+    const r = await api(`/api/model/download/${id}`, { method: 'POST' });
+    if (r.status !== 'already_downloaded') {
+      await new Promise((resolve, reject) => {
+        const timer = setInterval(async () => {
+          try {
+            const p = await api('/api/model/download/progress');
+            const pct = Math.round((p.progress || 0) * 100);
+            $('dl-progress').firstElementChild.style.width = pct + '%';
+            $('dl-progress').setAttribute('aria-valuenow', String(pct));
+            if (p.error) { clearInterval(timer); reject(new Error(p.error)); }
+            else if (p.done) { clearInterval(timer); resolve(); }
+          } catch (e) { clearInterval(timer); reject(e); }
+        }, 800);
+      });
+    }
+    $('dl-progress').style.display = 'none';
+    modelBusy = false;
+    const st = await api('/api/model/status');
+    const m = (st.local_models || []).find(x => x.tier === id);
+    if (m) {
+      await refreshModelDialog();
+      const row = [...$('tier-list').querySelectorAll('button')].find(x => x.dataset.key === 'local:' + m.path);
+      await useModel(m, row || btn);   // downloaded: use it straight away
+      return;
+    }
+    dlStatus('Download complete ✓ — choose it under “On this machine”.');
+  } catch (e) {
+    $('dl-progress').style.display = 'none';
+    dlStatus('Download failed: ' + e.message, true);
+  } finally {
+    modelBusy = false;
+    await refreshModelDialog();
+    await refreshHealth();
   }
 }
 
@@ -1040,10 +1202,12 @@ function renderHardwareStatusLine(hwd) {
     const n = Number(hwd.offload_layers !== undefined ? hwd.offload_layers : hwd.layers_offloaded);
     parts.push('GPU: partial offload' + (Number.isFinite(n) && n > 0 ? ' (' + n + ' of layers)' : ''));
   } else if (offload === 'cpu') {
-    parts.push('Running on CPU — expect slower generation; consider a smaller model tier');
+    parts.push('Running on CPU: replies are slower; a 2B model answers about twice as fast as 4B.');
   }
   if (hwd && hwd.backend_wheel === 'cpu' && hwd.has_nvidia) {
-    parts.push('GPU detected but CUDA engine not installed — re-run setup to enable GPU acceleration.');
+    // re-running setup does not fix this: prebuilt CUDA wheels need the CUDA 12
+    // runtime and the newest one predates Qwen3.5 (docs/deployment.md, F2)
+    parts.push('NVIDIA GPU found, but this AI engine build is CPU-only (GPU builds need the CUDA 12 toolkit).');
   }
   if (!parts.length) {
     el.style.display = 'none';
@@ -1052,44 +1216,6 @@ function renderHardwareStatusLine(hwd) {
   }
   el.textContent = parts.join(' ');
   el.style.display = 'block';
-}
-
-async function pickTier(id, t, div, isDisabled) {
-  if (isDisabled || div.classList.contains('disabled')) {
-    status('This tier may not fit this machine — pick a smaller one.', true);
-    return;
-  }
-  if (t.downloaded) {
-    await api('/api/model/select', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier: id }),
-    });
-    status('Model switched to ' + id + '. It loads on your next message.');
-    await refreshModelDialog();
-    await refreshHealth();
-    return;
-  }
-  // download flow
-  $('dl-progress').style.display = 'block';
-  $('dl-status').style.display = 'block';
-  $('dl-status').textContent = 'Downloading…';
-  await api(`/api/model/download/${id}`, { method: 'POST' });
-  const timer = setInterval(async () => {
-    const p = await api('/api/model/download/progress');
-    $('dl-progress').firstElementChild.style.width = Math.round((p.progress || 0) * 100) + '%';
-    $('dl-progress').setAttribute('aria-valuenow', String(Math.round((p.progress || 0) * 100)));
-    if (p.error) {
-      clearInterval(timer);
-      $('dl-status').textContent = 'Download failed: ' + p.error;
-      return;
-    }
-    if (p.done) {
-      clearInterval(timer);
-      $('dl-status').textContent = 'Download complete ✓ — model loads on next message.';
-      await refreshModelDialog();
-      await refreshHealth();
-    }
-  }, 800);
 }
 
 /* ---------- health dot ---------- */

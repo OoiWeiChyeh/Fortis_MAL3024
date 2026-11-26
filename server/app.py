@@ -51,19 +51,52 @@ async def command(req: CommandRequest):
 
 # ---- model management ---------------------------------------------------------
 
+def model_fit(size_gb: float, min_vram_gb: float, hw, gpu: bool) -> dict:
+    """How a model of `size_gb` will run on this machine. Nothing is blocked
+    on VRAM: the engine offloads partially and runs on CPU without CUDA, so
+    on a CPU build RAM is the real limit (model + ~1.5 GB working memory)."""
+    size = float(size_gb or 0)
+    if gpu and hw.vram_gb >= max(min_vram_gb or 0, size + 0.8):
+        return {"fit": "gpu", "note": "runs on the GPU"}
+    if gpu and hw.vram_gb > 0:
+        return {"fit": "partial", "note": "part GPU, part CPU (slower)"}
+    if hw.ram_gb and size + 1.5 > hw.ram_gb:
+        return {"fit": "too-large", "note": f"needs about {size + 1.5:.0f} GB RAM; this machine has {hw.ram_gb:.0f} GB"}
+    return {"fit": "cpu", "note": "runs on the CPU"}
+
+
+def _loaded_path():
+    st = engine.llama_engine._STATE
+    return st["path"] if st["model"] is not None else None
+
+
 @api.get("/model/status")
 async def model_status():
     hw = detect()
     warning = await engine.check_model_available()
     hardware_info = engine.llama_engine.hardware_status(hw)
-    hardware_info["can_cuda"] = can_use_cuda()
+    gpu = can_use_cuda()
+    hardware_info["can_cuda"] = gpu
+    tiers = model_manager.tier_status()
+    for t in tiers.values():
+        t.update(model_fit(t["size_gb"], t["min_vram_gb"], hw, gpu))
+    local = model_manager.local_model_status()
+    loaded = _loaded_path()
+    for m in local:
+        info = model_manager.TIERS.get(m["tier"] or "", {})
+        m.update(model_fit(m["size_gb"], info.get("min_vram_gb", 0), hw, gpu))
+        m["loaded"] = bool(loaded and os.path.abspath(loaded) == os.path.abspath(m["path"]))
     return {
         "hardware": hardware_info,
         "suggested_tier": suggest_tier(hw),
         "suggested_tiers": suggest_tiers(hw),
-        "tiers": model_manager.tier_status(),
+        "tiers": tiers,
+        "local_models": local,
         "active_model": model_manager.current_selection(),
         "loaded": engine.llama_engine._STATE["model"] is not None,
+        "loaded_model": os.path.basename(loaded) if loaded else None,
+        "loading": bool(engine.llama_engine._STATE.get("loading")),
+        "downloading": not model_manager.download_progress()["done"],
         "load_error": engine.llama_engine._STATE["error"],
         "warning": warning,
     }
@@ -77,11 +110,13 @@ class TierRequest(BaseModel):
 async def model_download(tier: str):
     if tier not in model_manager.TIERS:
         raise HTTPException(400, f"Unknown tier '{tier}'")
-    # already downloaded? just select it
-    for m in model_manager.list_local_models():
-        if f"-{tier}-" in m["name"] or f"-{tier}." in m["name"]:
-            model_manager.set_selection(m["path"])
-            return {"status": "already_downloaded", "path": m["path"]}
+    # already downloaded? just select it. (The old check compared "-4b-"
+    # case-sensitively with "Qwen3.5-4B-...", so every click re-contacted
+    # Hugging Face and logged a fresh "Downloaded" line.)
+    existing = model_manager.local_path_for_tier(tier)
+    if existing:
+        _select_path(existing)
+        return {"status": "already_downloaded", "path": existing}
     prog = model_manager.download_progress()
     if not prog["done"] and prog["tier"] == tier:
         return {"status": "in_progress"}
@@ -112,32 +147,68 @@ class SelectRequest(BaseModel):
     path: str = ""
 
 
+def _models_root() -> str:
+    return os.path.realpath(settings.models_dir)
+
+
+def _resolve_request_path(req: "SelectRequest") -> str:
+    if req.tier:
+        path = model_manager.local_path_for_tier(req.tier)
+        if not path:
+            raise HTTPException(404, f"Tier '{req.tier}' is not downloaded yet.")
+        return path
+    if not req.path or not req.path.lower().endswith(".gguf") or not os.path.isfile(req.path):
+        raise HTTPException(404, "Model file not found.")
+    # only files Fortis manages: the UI sends paths it was given, but this is
+    # still an HTTP input and must not name arbitrary files on disk
+    real = os.path.realpath(req.path)
+    if os.path.commonpath([real, _models_root()]) != _models_root():
+        raise HTTPException(400, "Only models in the Fortis models folder can be selected.")
+    return real
+
+
+def _select_path(path: str) -> None:
+    tier = model_manager.tier_for_file(path)
+    if tier and "n_ctx" in model_manager.TIERS[tier]:
+        settings.n_ctx = model_manager.TIERS[tier]["n_ctx"]
+    model_manager.set_selection(path)
+    # an earlier explicit load pins FORTIS_MODEL_PATH, which outranks the
+    # selection file; keep it in step so a switch is never silently ignored
+    if os.environ.get("FORTIS_MODEL_PATH"):
+        os.environ["FORTIS_MODEL_PATH"] = path
+    engine.llama_engine.unload()
+
+
 @api.post("/model/select")
 async def model_select(req: SelectRequest):
-    if req.tier:
-        for m in model_manager.list_local_models():
-            name_lower = m["name"].lower()
-            if req.tier in model_manager.TIERS:
-                match_patterns = model_manager.TIERS[req.tier].get("match", [f"-{req.tier}-", f"-{req.tier}."])
-                if any(p in name_lower for p in match_patterns):
-                    req.path = m["path"]
-                    break
-            elif f"-{req.tier}-" in name_lower or f"-{req.tier}." in name_lower:
-                req.path = m["path"]
-                break
-        else:
-            raise HTTPException(404, f"Tier '{req.tier}' is not downloaded yet.")
-    if not req.path or not os.path.isfile(req.path):
-        raise HTTPException(404, "Model file not found.")
-    basename = os.path.basename(req.path).lower()
-    for tier_id, info in model_manager.TIERS.items():
-        if "match" in info and any(m in basename for m in info["match"]):
-            if "n_ctx" in info:
-                settings.n_ctx = info["n_ctx"]
-            break
-    model_manager.set_selection(req.path)
-    engine.llama_engine.unload()
-    return {"status": "selected", "path": req.path, "n_ctx": settings.n_ctx}
+    """Selects a model; it loads on the next message (or via /model/load)."""
+    path = _resolve_request_path(req)
+    _select_path(path)
+    return {"status": "selected", "path": path, "n_ctx": settings.n_ctx}
+
+
+@api.post("/model/load")
+async def model_load(req: SelectRequest):
+    """One-click use: select the model and load it now, so the next message
+    answers immediately instead of absorbing the load time."""
+    import asyncio
+    import time
+
+    path = _resolve_request_path(req)
+    if _loaded_path() and os.path.abspath(_loaded_path()) == os.path.abspath(path):
+        return {"status": "ready", "path": path, "seconds": 0.0, "already_loaded": True,
+                "hardware": engine.llama_engine.hardware_status()}
+    _select_path(path)
+    t0 = time.perf_counter()
+    engine.llama_engine._STATE["loading"] = True
+    try:
+        await asyncio.get_running_loop().run_in_executor(None, engine.llama_engine.load_model, path, settings.n_ctx)
+    except Exception as e:
+        raise HTTPException(500, f"Could not load {os.path.basename(path)}: {e}")
+    finally:
+        engine.llama_engine._STATE["loading"] = False
+    return {"status": "ready", "path": path, "seconds": round(time.perf_counter() - t0, 1),
+            "hardware": engine.llama_engine.hardware_status()}
 
 
 # ---- reports -------------------------------------------------------------------

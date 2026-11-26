@@ -3,6 +3,23 @@
 Changes made in this fork on top of upstream `kenobicjj/Fortis` @ `20dfe52`.
 Dates are commit dates; see `git log` for the full record.
 
+## Model picker usability and CUDA detection
+
+### Changed
+- **Model dialog rebuilt for one-click use.** "On this machine" lists every downloaded GGUF (catalogued or not); choosing one selects *and* loads it (`POST /api/model/load`), so the next message answers immediately. "Available to download" lists the rest once, with a single *Download & use* action that loads the model when the download finishes.
+- Every model shows where it will run (GPU, part GPU, CPU, or too large for this machine's RAM) instead of being greyed out for VRAM; only a model that cannot fit in RAM is disabled, with the reason.
+- Role filter (All / Chat / GRC / Code / OSINT-CTI) as a labelled toggle group, remembered between sessions; the active and recommended models sort first.
+- Accessibility: rows are real buttons with `aria-pressed`; loading exposes `aria-busy` and is announced in a polite live region with the load time; errors are stated in text; keyboard focus is kept when the list re-renders; forced-colours outline for the selected model.
+- Hardware line states that the GPU is unused because the engine build is CPU-only, instead of suggesting a setup re-run that cannot fix it.
+
+### Fixed
+- Downloaded Qwen3.5 4B/2B were reported as not downloaded (all-patterns match).
+- Choosing a downloaded tier re-contacted Hugging Face on every click (case-sensitive filename check).
+- "Chat & analysis" listed no models (filter used a role no tier has).
+- Switching models after an explicit load was ignored (pinned `FORTIS_MODEL_PATH` outranked the selection).
+- `setup.ps1` marked CPU llama.cpp builds as CUDA on re-runs, causing a "Torch not compiled with CUDA enabled" traceback and bogus GPU layer requests; the marker is now verified against the build.
+- Model selection only accepts files inside the Fortis models folder.
+
 ## Trust layer, triage agent and evaluation — 2026-11-26
 
 ### Added

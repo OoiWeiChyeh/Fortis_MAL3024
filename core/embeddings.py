@@ -38,12 +38,22 @@ def _resolve_device() -> str:
     try:
         from engine.hardware import can_use_cuda
 
-        if can_use_cuda() and not _cuda_broken:
+        # the llama.cpp CUDA build and the torch build are independent:
+        # setup installs CPU-only torch, so check torch itself too
+        if can_use_cuda() and not _cuda_broken and _torch_cuda_available():
             device = "cuda"
     except Exception:
         device = "cpu"
     _resolved_device = device
     return device
+
+
+def _torch_cuda_available() -> bool:
+    try:
+        import torch
+        return bool(torch.cuda.is_available())
+    except Exception:
+        return False
 
 
 def _demote_to_cpu() -> None:
@@ -68,11 +78,8 @@ def _get_model():
         if device != "cuda":
             raise
         _demote_to_cpu()
-        logger.warning(
-            "CUDA embedding model load failed (%s); falling back to CPU",
-            device,
-            exc_info=True,
-        )
+        # an expected, recovered condition: one line, not a traceback
+        logger.warning("CUDA embedding model load failed; using CPU embeddings instead")
         return _load_model("cpu")
 
 

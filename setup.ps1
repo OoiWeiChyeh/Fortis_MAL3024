@@ -92,7 +92,11 @@ if ($LASTEXITCODE -ne 0) {
     if ($hasNvidia) {
         Write-Host "       NVIDIA GPU detected - trying the CUDA wheel first..."
         Install-Llama @("--only-binary", ":all:", "llama-cpp-python", "--extra-index-url", "https://abetlen.github.io/llama-cpp-python/whl/cu124")
-        if ((Test-LlamaImport)) { $ok = $true }
+        if ((Test-LlamaImport)) {
+            # importing is not enough: confirm the build actually offloads
+            Invoke-Native { & $venvPy -c "import llama_cpp,sys; sys.exit(0 if llama_cpp.llama_supports_gpu_offload() else 1)" 2>$null } | Out-Null
+            if ($global:LASTEXITCODE -eq 0) { $ok = $true }
+        }
         if ($ok) {
             New-Item -ItemType File -Path $marker -Force | Out-Null
             Write-Host "  [ok] Engine installed (GPU-accelerated)"
@@ -146,8 +150,18 @@ if ($LASTEXITCODE -ne 0) {
         }
     }
 } else {
-    Write-Host "  [ok] AI engine present"
-    if (-not (Test-Path $marker)) { New-Item -ItemType File -Path $marker -Force | Out-Null }
+    # Record the CUDA marker only when the installed build really offloads to
+    # the GPU. Writing it unconditionally (as before) mislabelled CPU builds:
+    # embeddings then tried CUDA on CPU-only torch and the engine requested
+    # GPU layers the build cannot use.
+    $gpuOk = Invoke-Native { & $venvPy -c "import llama_cpp,sys; sys.exit(0 if llama_cpp.llama_supports_gpu_offload() else 1)" 2>$null }
+    if ($global:LASTEXITCODE -eq 0) {
+        if (-not (Test-Path $marker)) { New-Item -ItemType File -Path $marker -Force | Out-Null }
+        Write-Host "  [ok] AI engine present (GPU-accelerated)"
+    } else {
+        if (Test-Path $marker) { Remove-Item $marker -Force }
+        Write-Host "  [ok] AI engine present (CPU)"
+    }
 }
 
 # 5. offline self-test (fast, no model download)

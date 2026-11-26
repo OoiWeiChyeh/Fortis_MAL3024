@@ -80,7 +80,23 @@ def _enable_real_backend(monkeypatch):
 
 
 def _cuda(monkeypatch, value):
+    """A CUDA-capable machine: CUDA llama.cpp build and CUDA torch."""
     monkeypatch.setattr("engine.hardware.can_use_cuda", lambda: value)
+    monkeypatch.setattr(embeddings, "_torch_cuda_available", lambda: value)
+
+
+def test_embedding_stays_cpu_when_torch_lacks_cuda(fake_st, monkeypatch):
+    # field report: a CUDA llama.cpp marker with setup's CPU-only torch made
+    # the embedder try CUDA and log "Torch not compiled with CUDA enabled"
+    _enable_real_backend(monkeypatch)
+    monkeypatch.setattr("engine.hardware.can_use_cuda", lambda: True)
+    monkeypatch.setattr(embeddings, "_torch_cuda_available", lambda: False)
+    devices = []
+    fake_st.SentenceTransformer = _ctor_recording(devices, lambda device: _StubModel(device))
+
+    embeddings.embed_texts(["hello"])
+
+    assert devices == ["cpu"]
 
 
 def _ctor_recording(recorder, make):

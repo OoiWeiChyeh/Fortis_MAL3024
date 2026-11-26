@@ -175,26 +175,60 @@ def list_local_models() -> list:
         return []
 
 
+def tier_for_file(name: str) -> Optional[str]:
+    """Catalog tier a GGUF filename belongs to (case-insensitive), or None.
+    ANY match pattern identifies a tier: the old check required ALL of them
+    ("-4b" and "_4b"), so downloaded Qwen3.5 4B/2B files were never
+    recognised and the picker offered to download them again."""
+    low = os.path.basename(name).lower()
+    for tier_id, info in TIERS.items():
+        if any(m.lower() in low for m in info["match"]):
+            return tier_id
+    return None
+
+
+def local_path_for_tier(tier_id: str) -> Optional[str]:
+    for m in list_local_models():
+        if tier_for_file(m["name"]) == tier_id:
+            return m["path"]
+    return None
+
+
 def tier_status() -> dict:
-    """tier_id -> {label, size_gb, downloaded, active, roles, min_vram_gb, n_ctx} for the UI picker."""
-    local = {m["name"].lower() for m in list_local_models()}
+    """tier_id -> {label, size_gb, downloaded, path, active, roles, min_vram_gb, n_ctx} for the UI picker."""
+    local = {tier_for_file(m["name"]): m["path"] for m in list_local_models()}
     active = current_selection()
-    sel = active and os.path.basename(active).lower()
     out = {}
     for tier_id, info in TIERS.items():
-        downloaded = any(all(m in name for m in info["match"]) for name in local)
-        active_match = False
-        if sel and downloaded:
-            active_match = any(m in sel for m in info["match"])
+        path = local.get(tier_id)
         out[tier_id] = {
             "label": info["label"],
             "size_gb": info["size_gb"],
-            "downloaded": downloaded,
-            "active": bool(active_match),
+            "downloaded": path is not None,
+            "path": path,
+            "active": bool(active and path and os.path.abspath(active) == os.path.abspath(path)),
             "roles": info["roles"],
             "min_vram_gb": info["min_vram_gb"],
             "n_ctx": info["n_ctx"],
         }
+    return out
+
+
+def local_model_status() -> list:
+    """Every GGUF on disk, catalogued or not, for one-click use."""
+    active = current_selection()
+    out = []
+    for m in list_local_models():
+        tier = tier_for_file(m["name"])
+        info = TIERS.get(tier, {})
+        out.append({
+            **m,
+            "tier": tier,
+            "label": info.get("label") or m["name"],
+            "roles": info.get("roles", []),
+            "n_ctx": info.get("n_ctx"),
+            "active": bool(active and os.path.abspath(active) == os.path.abspath(m["path"])),
+        })
     return out
 
 

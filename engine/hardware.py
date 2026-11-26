@@ -15,7 +15,8 @@ import platform
 import shutil
 import subprocess
 from dataclasses import dataclass
-from typing import Dict
+from functools import lru_cache
+from typing import Dict, Optional
 
 
 @dataclass
@@ -25,10 +26,27 @@ class Hardware:
     has_nvidia: bool
 
 
+@lru_cache(maxsize=1)
+def llama_gpu_offload_supported() -> Optional[bool]:
+    """What the installed llama.cpp build itself reports: True/False, or None
+    when llama_cpp is not importable or too old to say."""
+    try:
+        import llama_cpp
+        fn = getattr(llama_cpp, "llama_supports_gpu_offload", None)
+        return bool(fn()) if fn else None
+    except Exception:
+        return None
+
+
 def cuda_marker_exists() -> bool:
-    """True when the setup script recorded a verified CUDA llama-cpp wheel."""
+    """True when the setup script recorded a verified CUDA llama-cpp wheel
+    AND the installed build does not contradict it. Older setup scripts wrote
+    the marker whenever llama_cpp was already installed, so a CPU build could
+    carry a stale marker; that made embeddings try CUDA on CPU-only torch
+    ("Torch not compiled with CUDA enabled") and requested GPU layers the
+    build cannot use."""
     marker = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".llama-cuda-ok")
-    return os.path.exists(marker)
+    return os.path.exists(marker) and llama_gpu_offload_supported() is not False
 
 
 def can_use_cuda() -> bool:

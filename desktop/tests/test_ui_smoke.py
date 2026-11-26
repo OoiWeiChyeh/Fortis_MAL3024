@@ -77,7 +77,10 @@ def test_hardware_status_line_present(index_html):
         "renderHardwareStatusLine must stay a top-level function"
     assert "GPU: all layers offloaded (CUDA)" in script
     assert "Running on CPU" in script
-    assert "re-run setup to enable GPU acceleration" in script
+    # re-running setup cannot fix a CPU-only engine build (no CUDA 12 runtime,
+    # newest CUDA wheel predates Qwen3.5), so the UI no longer suggests it
+    assert "this AI engine build is CPU-only" in script
+    assert "re-run setup to enable GPU acceleration" not in script
 
 
 def test_cpu_mode_progress_hint(index_html):

@@ -39,7 +39,28 @@ def test_no_clickable_divs_or_nested_buttons():
     assert not re.search(r"\.role\s*=\s*['\"]button|setAttribute\(\s*['\"]role['\"],\s*['\"]button", JS)
     assert not re.search(r"<li[^>]*role=|class=\"eng-select\"[^>]*role=", JS)
     # model tiers used to be clickable divs with no keyboard access
-    assert "document.createElement('button');\n      div.type = 'button';" in JS
+    assert re.search(r"function modelButton\([^)]*\)\s*\{\s*const b = document.createElement\('button'\);\s*b\.type = 'button';", JS)
+
+
+def test_model_dialog_is_operable_and_announced():
+    # role filter is a labelled group of toggle buttons
+    assert '<div id="model-filter" role="group" aria-label="Show models for">' in HTML
+    assert HTML.count("data-role=") >= 5
+    assert "setAttribute('aria-pressed', String(b.dataset.role === modelRoleFilter))" in JS
+    # load/download progress is announced in words; errors in text, not colour
+    assert '<div id="dl-status" role="status" aria-live="polite">' in HTML
+    assert "el.textContent = msg ? (isErr ? 'Error: ' + msg : msg) : '';" in JS
+    # busy state is exposed, and focus survives the list being re-rendered
+    assert "setAttribute('aria-busy', 'true')" in JS
+    assert "again.focus()" in JS
+    # nothing is greyed out for VRAM alone; only a model too large for RAM
+    assert "const tooBig = t.fit === 'too-large';" in JS
+    assert "hw.vram_gb < t.min_vram_gb" not in JS
+
+
+def test_model_dialog_chat_role_is_not_empty():
+    # field report: the Chat group filtered on 'general', a role no tier has
+    assert "roles: ['general']" not in JS
 
 
 def test_decorative_svgs_hidden_from_screen_readers():
