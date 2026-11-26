@@ -4,9 +4,9 @@ authoritative, verbatim reference text for a framework, replacing the
 built-in paraphrased seed corpus for that framework.
 
 Why this exists: the built-in seed corpus (nist_csf.json, owasp_top10.json,
-cis_controls.json) is deliberately paraphrased rather than verbatim, per
-Anthropic's copyright guidance -- reproducing full official standards text
-isn't something Claude does even when a license would technically permit it.
+cis_controls.json) is deliberately paraphrased rather than verbatim, so the
+repository never redistributes full official standards text, even where a
+licence would technically permit it.
 NIST CSF is U.S. government public domain and OWASP Top 10 is CC BY-SA, so
 either could legally be reproduced verbatim; CIS Controls has a more
 restrictive license. Rather than us shipping copied standards text of

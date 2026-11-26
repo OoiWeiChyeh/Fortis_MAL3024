@@ -99,6 +99,15 @@ real file into the reports folder and replies with a download link.
 python -m server.app --port 8757     # same UI at http://127.0.0.1:8757
 ```
 
+The API only answers requests addressed to a loopback host and refuses
+cross-origin browser requests (see `core/security.py`), so a web page open in
+the analyst's browser cannot read or write engagement data. If you bind to
+another interface, list the hostnames clients will use:
+
+```bash
+FORTIS_ALLOWED_HOSTS=127.0.0.1,localhost,fortis.lab.internal python -m server.app --host 0.0.0.0
+```
+
 ## What this is / isn't
 
 - IS: a document- and config-review advisor that maps findings to

@@ -1,0 +1,583 @@
+=== Fresh-clone deployment of fork OoiWeiChyeh/Fortis_MAL3024 @f8e8cc2 Reword framework loader docstring on why the seed corpus is paraphrased | started 11/26/2026 09:08:56 | PowerShell 5.1.26100.10068
+
+  Fortis - Cybersecurity Advisor : setup
+  ----------------------------------------
+  [ok] Python 3.12.0
+  [..] Creating virtual environment (one-time)...
+  [..] Installing dependencies (first run only, ~5 min)...
+Collecting fastapi (from -r requirements.txt (line 1))
+  Obtaining dependency information for fastapi from https://files.pythonhosted.org/packages/c4/c1/3b74c030262a1b38b1fee180f80b4007bbc11c9ac12028cb18c7bcecaec9/fastapi-0.165.0-py3-none-any.whl.metadata
+  Using cached fastapi-0.165.0-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn[standard] (from -r requirements.txt (line 2))
+  Obtaining dependency information for uvicorn[standard] from https://files.pythonhosted.org/packages/38/0c/b54a4fdd7f90a3af8b02ebc9ce6712c2c208b7926a2f7bad95c33ebbe943/uvicorn-0.54.0-py3-none-any.whl.metadata
+  Using cached uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting python-multipart (from -r requirements.txt (line 3))
+  Obtaining dependency information for python-multipart from https://files.pythonhosted.org/packages/f5/0e/090c52b122d8ec5fa37942c1410fea9cf04ce98bca0c84dde7f0aa11594d/python_multipart-0.0.34-py3-none-any.whl.metadata
+  Using cached python_multipart-0.0.34-py3-none-any.whl.metadata (6.3 kB)
+Collecting pydantic (from -r requirements.txt (line 4))
+  Obtaining dependency information for pydantic from https://files.pythonhosted.org/packages/8a/8c/824a686c4ba815ddb0722f9e66272088bccd4e1ae1d2f7015375e4a4fc7f/pydantic-2.14.4-py3-none-any.whl.metadata
+  Using cached pydantic-2.14.4-py3-none-any.whl.metadata (143 kB)
+Collecting chromadb (from -r requirements.txt (line 6))
+  Obtaining dependency information for chromadb from https://files.pythonhosted.org/packages/eb/ce/0f7be6e5d0feafa2cda54b12e6542afeea7dea89d2d411e14da90f8abb96/chromadb-1.5.9-cp39-abi3-win_amd64.whl.metadata
+  Using cached chromadb-1.5.9-cp39-abi3-win_amd64.whl.metadata (5.1 kB)
+Collecting sentence-transformers (from -r requirements.txt (line 7))
+  Obtaining dependency information for sentence-transformers from https://files.pythonhosted.org/packages/81/33/efddeeec49af6ddae162e2824c77f8b1136c2ad43ec8d8fec53fb70c93ef/sentence_transformers-6.3.0-py3-none-any.whl.metadata
+  Using cached sentence_transformers-6.3.0-py3-none-any.whl.metadata (20 kB)
+Collecting rank-bm25 (from -r requirements.txt (line 8))
+  Obtaining dependency information for rank-bm25 from https://files.pythonhosted.org/packages/2a/21/f691fb2613100a62b3fa91e9988c991e9ca5b89ea31c0d3152a3210344f9/rank_bm25-0.2.2-py3-none-any.whl.metadata
+  Using cached rank_bm25-0.2.2-py3-none-any.whl.metadata (3.2 kB)
+Collecting pymupdf (from -r requirements.txt (line 10))
+  Obtaining dependency information for pymupdf from https://files.pythonhosted.org/packages/48/fb/66b0ecb2ea76086552a1ba1360a1b25da815d463f3cc58530c9438577898/pymupdf-2.2-cp311-abi3-win_amd64.whl.metadata
+  Using cached pymupdf-2.2-cp311-abi3-win_amd64.whl.metadata (26 kB)
+Collecting python-docx (from -r requirements.txt (line 11))
+  Obtaining dependency information for python-docx from https://files.pythonhosted.org/packages/d0/00/1e03a4989fa5795da308cd774f05b704ace555a70f9bf9d3be057b680bcf/python_docx-1.2.0-py3-none-any.whl.metadata
+  Using cached python_docx-1.2.0-py3-none-any.whl.metadata (2.0 kB)
+Collecting python-pptx (from -r requirements.txt (line 12))
+  Obtaining dependency information for python-pptx from https://files.pythonhosted.org/packages/d9/4f/00be2196329ebbff56ce564aa94efb0fbc828d00de250b1980de1a34ab49/python_pptx-1.0.2-py3-none-any.whl.metadata
+  Using cached python_pptx-1.0.2-py3-none-any.whl.metadata (2.5 kB)
+Collecting openpyxl (from -r requirements.txt (line 13))
+  Obtaining dependency information for openpyxl from https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl.metadata
+  Using cached openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
+Collecting reportlab (from -r requirements.txt (line 15))
+  Obtaining dependency information for reportlab from https://files.pythonhosted.org/packages/27/bb/603afbaa72589bd9519bef5d631c099407a6853465814e6a22b77a7b12d3/reportlab-5.1.2-py3-none-any.whl.metadata
+  Using cached reportlab-5.1.2-py3-none-any.whl.metadata (1.7 kB)
+Collecting markdown-it-py (from -r requirements.txt (line 16))
+  Obtaining dependency information for markdown-it-py from https://files.pythonhosted.org/packages/c9/31/5f0ac2f1a1c67423c995c731a11cd4ad05d081a2be969d74f868bdb9cc70/markdown_it_py-4.3.0-py3-none-any.whl.metadata
+  Using cached markdown_it_py-4.3.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting huggingface_hub>=0.26 (from -r requirements.txt (line 17))
+  Obtaining dependency information for huggingface_hub>=0.26 from https://files.pythonhosted.org/packages/d4/55/ff47f1b082ecf5f43f4bc1e3b932d68eead171dabbbd1a92666c686301d7/huggingface_hub-2.4.0-py3-none-any.whl.metadata
+  Using cached huggingface_hub-2.4.0-py3-none-any.whl.metadata (16 kB)
+Collecting matplotlib>=3.11.2 (from -r requirements.txt (line 18))
+  Obtaining dependency information for matplotlib>=3.11.2 from https://files.pythonhosted.org/packages/04/93/0d239bde12b308262265c2d98909b2f0ecad2b5deeae96241642e822e9c7/matplotlib-3.11.2-cp312-cp312-win_amd64.whl.metadata
+  Using cached matplotlib-3.11.2-cp312-cp312-win_amd64.whl.metadata (80 kB)
+Collecting pywebview (from -r requirements.txt (line 20))
+  Obtaining dependency information for pywebview from https://files.pythonhosted.org/packages/3d/25/9491695c22c4842c5b3903b4dc172e0eecf67a27c0af34a71512c9b76a0a/pywebview-6.2.1-py3-none-any.whl.metadata
+  Using cached pywebview-6.2.1-py3-none-any.whl.metadata (4.9 kB)
+Collecting pytest (from -r requirements-dev.txt (line 2))
+  Obtaining dependency information for pytest from https://files.pythonhosted.org/packages/51/39/1f5d8c8877a0fa327db959c19341d4be61660de1ab6b7391f9eb805bcd67/pytest-9.2.0-py3-none-any.whl.metadata
+  Using cached pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting httpx (from -r requirements-dev.txt (line 3))
+  Obtaining dependency information for httpx from https://files.pythonhosted.org/packages/2a/39/e50c7c3a983047577ee07d2a9e53faf5a69493943ec3f6a384bdc792deb2/httpx-0.28.1-py3-none-any.whl.metadata
+  Using cached httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting starlette>=1.6.0 (from fastapi->-r requirements.txt (line 1))
+  Obtaining dependency information for starlette>=1.6.0 from https://files.pythonhosted.org/packages/88/2e/947cfe02def9371c07cd5bf5b6b61c829e9aecb9904db02a66cfafbc1eec/starlette-1.10.0-py3-none-any.whl.metadata
+  Using cached starlette-1.10.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting anyio>=4.1.0 (from fastapi->-r requirements.txt (line 1))
+  Obtaining dependency information for anyio>=4.1.0 from https://files.pythonhosted.org/packages/a9/16/7757fb84c819accc7d7e9af5291b261e4abb8627ee040f99e7d35ef2457a/anyio-4.16.0-py3-none-any.whl.metadata
+  Using cached anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)
+Collecting typing-extensions>=4.8.0 (from fastapi->-r requirements.txt (line 1))
+  Obtaining dependency information for typing-extensions>=4.8.0 from https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl.metadata
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting typing-inspection>=0.4.2 (from fastapi->-r requirements.txt (line 1))
+  Obtaining dependency information for typing-inspection>=0.4.2 from https://files.pythonhosted.org/packages/de/0c/ea2544850a7c135e15033a5c7a8e7211136184b7ae63e2239d557c2b3019/typing_inspection-0.4.5-py3-none-any.whl.metadata
+  Using cached typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)
+Collecting annotated-doc>=0.0.2 (from fastapi->-r requirements.txt (line 1))
+  Obtaining dependency information for annotated-doc>=0.0.2 from https://files.pythonhosted.org/packages/5e/b1/9530d6bee606979d54501adcc767d958a38929827f11a524b0d93429d2ad/annotated_doc-0.0.7-py3-none-any.whl.metadata
+  Using cached annotated_doc-0.0.7-py3-none-any.whl.metadata (6.4 kB)
+Collecting opentelemetry-api>=1.44.0 (from fastapi->-r requirements.txt (line 1))
+  Obtaining dependency information for opentelemetry-api>=1.44.0 from https://files.pythonhosted.org/packages/a9/2d/610db864d7513158cebb8f36cc88e67e73bd6c7aa1905ef18d89e1281c81/opentelemetry_api-1.45.2-py3-none-any.whl.metadata
+  Using cached opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+Collecting click>=7.0 (from uvicorn[standard]->-r requirements.txt (line 2))
+  Obtaining dependency information for click>=7.0 from https://files.pythonhosted.org/packages/31/7d/164b7ffc8624fe9efb4221bf9af485d5c1e41b9ae118045d2b6dc5457d8b/click-8.5.1-py3-none-any.whl.metadata
+  Using cached click-8.5.1-py3-none-any.whl.metadata (2.6 kB)
+Collecting h11>=0.8 (from uvicorn[standard]->-r requirements.txt (line 2))
+  Obtaining dependency information for h11>=0.8 from https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl.metadata
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting httptools>=0.8.0 (from uvicorn[standard]->-r requirements.txt (line 2))
+  Obtaining dependency information for httptools>=0.8.0 from https://files.pythonhosted.org/packages/8b/69/813f1bf90be507d4166c437be1a413574d0e0abf36e2fec10c266661b0ee/httptools-0.9.0-cp312-cp312-win_amd64.whl.metadata
+  Using cached httptools-0.9.0-cp312-cp312-win_amd64.whl.metadata (3.7 kB)
+Collecting python-dotenv>=0.13 (from uvicorn[standard]->-r requirements.txt (line 2))
+  Obtaining dependency information for python-dotenv>=0.13 from https://files.pythonhosted.org/packages/60/d1/38f3a3405989a89ac18390803e70c6ad7c7760da4f9b83cbeca0c44a0c72/python_dotenv-1.2.4-py3-none-any.whl.metadata
+  Using cached python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+Collecting pyyaml>=5.1 (from uvicorn[standard]->-r requirements.txt (line 2))
+  Obtaining dependency information for pyyaml>=5.1 from https://files.pythonhosted.org/packages/a3/95/307a6ceafbad9a08300743d19329c31726224e583e05c4fe5358522ba283/pyyaml-6.0.4-cp312-cp312-win_amd64.whl.metadata
+  Using cached pyyaml-6.0.4-cp312-cp312-win_amd64.whl.metadata (2.4 kB)
+Collecting watchfiles>=0.20 (from uvicorn[standard]->-r requirements.txt (line 2))
+  Obtaining dependency information for watchfiles>=0.20 from https://files.pythonhosted.org/packages/48/a1/1c4a1b3c8030cd03206232612be8a6e8799093490c220b0fcb935d02b75a/watchfiles-1.3.0-cp310-abi3-win_amd64.whl.metadata
+  Using cached watchfiles-1.3.0-cp310-abi3-win_amd64.whl.metadata (5.0 kB)
+Collecting websockets>=13.0 (from uvicorn[standard]->-r requirements.txt (line 2))
+  Obtaining dependency information for websockets>=13.0 from https://files.pythonhosted.org/packages/59/31/d1636ba67ee9232a60033d90483e48686aa3856014e59110f29015f97bd2/websockets-17.4-cp312-cp312-win_amd64.whl.metadata
+  Using cached websockets-17.4-cp312-cp312-win_amd64.whl.metadata (6.5 kB)
+Collecting annotated-types>=0.6.0 (from pydantic->-r requirements.txt (line 4))
+  Obtaining dependency information for annotated-types>=0.6.0 from https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl.metadata
+  Using cached annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.50.5 (from pydantic->-r requirements.txt (line 4))
+  Obtaining dependency information for pydantic-core==2.50.5 from https://files.pythonhosted.org/packages/65/9d/666343e8bf3c1540f82e3a7bd1d3a844746e6827889c9b0a68561795e933/pydantic_core-2.50.5-cp312-cp312-win_amd64.whl.metadata
+  Using cached pydantic_core-2.50.5-cp312-cp312-win_amd64.whl.metadata (6.7 kB)
+Collecting build>=1.0.3 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for build>=1.0.3 from https://files.pythonhosted.org/packages/ad/9b/9fb3585dabcd73a1b2a6267f63f62649347c9e6d072c9fde365b105abb2c/build-1.6.1-py3-none-any.whl.metadata
+  Using cached build-1.6.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting pydantic-settings>=2.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for pydantic-settings>=2.0 from https://files.pythonhosted.org/packages/4c/26/3e68379ca313b6aa58e11fbd8b28d5c6f1b9f4428d70222ba021a76797ec/pydantic_settings-2.16.3-py3-none-any.whl.metadata
+  Using cached pydantic_settings-2.16.3-py3-none-any.whl.metadata (4.0 kB)
+Collecting pybase64>=1.4.1 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for pybase64>=1.4.1 from https://files.pythonhosted.org/packages/59/5e/20930b246a8fe9a9812282f67a9d8dc76440765a10d8b79789c0e2d620fd/pybase64-1.5.2-cp312-cp312-win_amd64.whl.metadata
+  Using cached pybase64-1.5.2-cp312-cp312-win_amd64.whl.metadata (12 kB)
+Collecting numpy>=1.22.5 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for numpy>=1.22.5 from https://files.pythonhosted.org/packages/d1/71/b1ce51834c21020d189332979d38ba7350eb6cd7ca8c8ec424a663b0ca6f/numpy-2.5.5-cp312-cp312-win_amd64.whl.metadata
+  Using cached numpy-2.5.5-cp312-cp312-win_amd64.whl.metadata (6.6 kB)
+Collecting onnxruntime>=1.14.1 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for onnxruntime>=1.14.1 from https://files.pythonhosted.org/packages/a9/3e/27039badc39a1b01628b6b40b1ff1bf4a886e6dfb2f311c483606b7c86f7/onnxruntime-1.32.0-cp312-cp312-win_amd64.whl.metadata
+  Using cached onnxruntime-1.32.0-cp312-cp312-win_amd64.whl.metadata (6.1 kB)
+Collecting opentelemetry-exporter-otlp-proto-grpc>=1.2.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for opentelemetry-exporter-otlp-proto-grpc>=1.2.0 from https://files.pythonhosted.org/packages/e8/48/14301cac3d106e795eef7e89e191489f086b4e5ad26e47c9635a198e95f4/opentelemetry_exporter_otlp_proto_grpc-1.45.2-py3-none-any.whl.metadata
+  Using cached opentelemetry_exporter_otlp_proto_grpc-1.45.2-py3-none-any.whl.metadata (2.6 kB)
+Collecting opentelemetry-sdk>=1.2.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for opentelemetry-sdk>=1.2.0 from https://files.pythonhosted.org/packages/9f/a5/9a3b793ef48245f2336a16beb2324c2397dbb3f987cd68942f77cca06156/opentelemetry_sdk-1.45.2-py3-none-any.whl.metadata
+  Using cached opentelemetry_sdk-1.45.2-py3-none-any.whl.metadata (1.6 kB)
+Collecting tokenizers>=0.13.2 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for tokenizers>=0.13.2 from https://files.pythonhosted.org/packages/d1/6c/24f074c9a0efb98e61b20aafe6b2641922d5db24e447d5d6daffd9e17555/tokenizers-0.23.3-cp310-abi3-win_amd64.whl.metadata
+  Using cached tokenizers-0.23.3-cp310-abi3-win_amd64.whl.metadata (10 kB)
+Collecting pypika>=0.48.9 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for pypika>=0.48.9 from https://files.pythonhosted.org/packages/57/83/c77dfeed04022e8930b08eedca2b6e5efed256ab3321396fde90066efb65/pypika-0.51.1-py2.py3-none-any.whl.metadata
+  Using cached pypika-0.51.1-py2.py3-none-any.whl.metadata (51 kB)
+Collecting tqdm>=4.65.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for tqdm>=4.65.0 from https://files.pythonhosted.org/packages/a7/03/921a3d3c75785aca9ebfbfcabfbc3a1be12e2ab5265deb026d55a5a3f83e/tqdm-4.70.1-py3-none-any.whl.metadata
+  Using cached tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+Collecting overrides>=7.3.1 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for overrides>=7.3.1 from https://files.pythonhosted.org/packages/2c/ab/fc8290c6a4c722e5514d80f62b2dc4c4df1a68a41d1364e625c35990fcf3/overrides-7.7.0-py3-none-any.whl.metadata
+  Using cached overrides-7.7.0-py3-none-any.whl.metadata (5.8 kB)
+Collecting importlib-resources (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for importlib-resources from https://files.pythonhosted.org/packages/8a/db/55a262f3606bebcae07cc14095338471ad7c0bbcaa37707e6f0ee49725b7/importlib_resources-7.1.0-py3-none-any.whl.metadata
+  Using cached importlib_resources-7.1.0-py3-none-any.whl.metadata (4.0 kB)
+Collecting grpcio>=1.58.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for grpcio>=1.58.0 from https://files.pythonhosted.org/packages/34/5d/24d7231068da599af52bb1cf8dc7cc6695f337c26340ee74b8918b68cf8a/grpcio-1.85.4-cp312-cp312-win_amd64.whl.metadata
+  Using cached grpcio-1.85.4-cp312-cp312-win_amd64.whl.metadata (3.9 kB)
+Collecting bcrypt>=4.0.1 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for bcrypt>=4.0.1 from https://files.pythonhosted.org/packages/9f/b9/9d9a641194a730bda138b3dfe53f584d61c58cd5230e37566e83ec2ffa0d/bcrypt-5.0.0-cp39-abi3-win_amd64.whl.metadata
+  Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl.metadata (10 kB)
+Collecting typer>=0.9.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for typer>=0.9.0 from https://files.pythonhosted.org/packages/62/f3/864dcb0e165b52e9f75aa3c7e0aeeb9876f139c66eb14d87856bb173b0fa/typer-0.29.2-py3-none-any.whl.metadata
+  Using cached typer-0.29.2-py3-none-any.whl.metadata (16 kB)
+Collecting kubernetes>=28.1.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for kubernetes>=28.1.0 from https://files.pythonhosted.org/packages/98/dc/3437018bd8ff7b64cbf17ca58f5fed7c1a5514e53ad728eb3888b34e9938/kubernetes-37.0.3-py2.py3-none-any.whl.metadata
+  Using cached kubernetes-37.0.3-py2.py3-none-any.whl.metadata (1.9 kB)
+Collecting tenacity>=8.2.3 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for tenacity>=8.2.3 from https://files.pythonhosted.org/packages/d6/26/1ff2b0721ac66a3ec5b1402b333110b352ab0a8724052ac279a7b82d40c4/tenacity-9.2.1-py3-none-any.whl.metadata
+  Using cached tenacity-9.2.1-py3-none-any.whl.metadata (1.4 kB)
+Collecting mmh3>=4.0.1 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for mmh3>=4.0.1 from https://files.pythonhosted.org/packages/8a/94/41c97ce26200a1a9242d159c2c5499844ec4a688fd4e69df044044f9e012/mmh3-5.3.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached mmh3-5.3.1-cp312-cp312-win_amd64.whl.metadata (14 kB)
+Collecting orjson>=3.9.12 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for orjson>=3.9.12 from https://files.pythonhosted.org/packages/58/9d/a1ca7321eeafd7d72e174cdc388cc96301f41516d863e7b1f64f0a1735be/orjson-3.13.0-cp312-cp312-win_amd64.whl.metadata
+  Using cached orjson-3.13.0-cp312-cp312-win_amd64.whl.metadata (43 kB)
+Collecting rich>=10.11.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for rich>=10.11.0 from https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl.metadata
+  Using cached rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+Collecting jsonschema>=4.19.0 (from chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for jsonschema>=4.19.0 from https://files.pythonhosted.org/packages/69/90/f63fb5873511e014207a475e2bb4e8b2e570d655b00ac19a9a0ca0a385ee/jsonschema-4.26.0-py3-none-any.whl.metadata
+  Using cached jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+Collecting transformers<6.0.0,>=5.0.0 (from sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for transformers<6.0.0,>=5.0.0 from https://files.pythonhosted.org/packages/1c/45/8aa25aeec09086bfd5fa094b91917ff52025c55907363fc94022eac4a0df/transformers-5.24.1-py3-none-any.whl.metadata
+  Using cached transformers-5.24.1-py3-none-any.whl.metadata (31 kB)
+Collecting torch>=2.2 (from sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for torch>=2.2 from https://files.pythonhosted.org/packages/74/0b/a57c0b58a64b7a197dc40fc464bb96c0de867f95a2b1cbb3ec9e54414fde/torch-2.15.0-cp312-cp312-win_amd64.whl.metadata
+  Using cached torch-2.15.0-cp312-cp312-win_amd64.whl.metadata (36 kB)
+Collecting scikit-learn>=1.1.0 (from sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for scikit-learn>=1.1.0 from https://files.pythonhosted.org/packages/72/8d/27c054166bac671770d1ea0ef7716134fe8119c0df224a58c89fd735a61c/scikit_learn-1.9.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached scikit_learn-1.9.1-cp312-cp312-win_amd64.whl.metadata (9.3 kB)
+Collecting scipy>=1.0.0 (from sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for scipy>=1.0.0 from https://files.pythonhosted.org/packages/39/e7/979fd14e75008623df31ba70d6bb144700f68feadcea042021c06a05bf82/scipy-1.18.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached scipy-1.18.1-cp312-cp312-win_amd64.whl.metadata (61 kB)
+Collecting networkx (from pymupdf->-r requirements.txt (line 10))
+  Obtaining dependency information for networkx from https://files.pythonhosted.org/packages/7e/cd/fe58041e9011f307c490e3e17dd48cc516448f7c698a3f2d9d9d65d7e6a8/networkx-3.7-py3-none-any.whl.metadata
+  Using cached networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+Collecting pymupdf-layout==2.2 (from pymupdf->-r requirements.txt (line 10))
+  Obtaining dependency information for pymupdf-layout==2.2 from https://files.pythonhosted.org/packages/26/ca/9c420be0671e228fd999fbe79a88194088cddb1a1258fe62518d8c952c49/pymupdf_layout-2.2-py3-none-any.whl.metadata
+  Using cached pymupdf_layout-2.2-py3-none-any.whl.metadata (657 bytes)
+Collecting psutil (from pymupdf->-r requirements.txt (line 10))
+  Obtaining dependency information for psutil from https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl.metadata
+  Using cached psutil-7.2.2-cp37-abi3-win_amd64.whl.metadata (22 kB)
+Collecting tabulate (from pymupdf->-r requirements.txt (line 10))
+  Obtaining dependency information for tabulate from https://files.pythonhosted.org/packages/99/55/db07de81b5c630da5cbf5c7df646580ca26dfaefa593667fc6f2fe016d2e/tabulate-0.10.0-py3-none-any.whl.metadata
+  Using cached tabulate-0.10.0-py3-none-any.whl.metadata (40 kB)
+Collecting pymupdf4llm==2.2 (from pymupdf->-r requirements.txt (line 10))
+  Obtaining dependency information for pymupdf4llm==2.2 from https://files.pythonhosted.org/packages/75/35/d010c604b27537edf92d6e3cb1cbbf3eede470c735c3b18e58d09567ac42/pymupdf4llm-2.2-py3-none-any.whl.metadata
+  Using cached pymupdf4llm-2.2-py3-none-any.whl.metadata (648 bytes)
+Collecting lxml>=3.1.0 (from python-docx->-r requirements.txt (line 11))
+  Obtaining dependency information for lxml>=3.1.0 from https://files.pythonhosted.org/packages/3a/5b/6ed903e4e6278a020c8a6f0dbbe78030d041840a6b4a64ea441a1e414077/lxml-6.1.3-cp312-cp312-win_amd64.whl.metadata
+  Using cached lxml-6.1.3-cp312-cp312-win_amd64.whl.metadata (3.4 kB)
+Collecting Pillow>=3.3.2 (from python-pptx->-r requirements.txt (line 12))
+  Obtaining dependency information for Pillow>=3.3.2 from https://files.pythonhosted.org/packages/ff/cd/73a79ecdc822076002eb24b5e1e4a530b0bb5310fcb6d239abbec877110b/pillow-13.0.0-cp312-cp312-win_amd64.whl.metadata
+  Using cached pillow-13.0.0-cp312-cp312-win_amd64.whl.metadata (9.3 kB)
+Collecting XlsxWriter>=0.5.7 (from python-pptx->-r requirements.txt (line 12))
+  Obtaining dependency information for XlsxWriter>=0.5.7 from https://files.pythonhosted.org/packages/a4/f4/42d98147a0e3e2ae905a1c51bd6fcac1e551e4223b35fbf5d9769f59ffb6/xlsxwriter-3.3.4-py3-none-any.whl.metadata
+  Using cached xlsxwriter-3.3.4-py3-none-any.whl.metadata (3.2 kB)
+Collecting et-xmlfile (from openpyxl->-r requirements.txt (line 13))
+  Obtaining dependency information for et-xmlfile from https://files.pythonhosted.org/packages/c1/8b/5fe2cc11fee489817272089c4203e679c63b570a5aaeb18d852ae3cbba6a/et_xmlfile-2.0.0-py3-none-any.whl.metadata
+  Using cached et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting charset-normalizer (from reportlab->-r requirements.txt (line 15))
+  Obtaining dependency information for charset-normalizer from https://files.pythonhosted.org/packages/82/78/7913aa5816c1606298274f47caf208efdd4245a0da1e309a13e518cc007b/charset_normalizer-3.5.3-cp312-cp312-win_amd64.whl.metadata
+  Using cached charset_normalizer-3.5.3-cp312-cp312-win_amd64.whl.metadata (44 kB)
+Collecting mdurl~=0.1 (from markdown-it-py->-r requirements.txt (line 16))
+  Obtaining dependency information for mdurl~=0.1 from https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl.metadata
+  Using cached mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+Collecting filelock>=3.10.0 (from huggingface_hub>=0.26->-r requirements.txt (line 17))
+  Obtaining dependency information for filelock>=3.10.0 from https://files.pythonhosted.org/packages/53/7b/678c8fbd372ff96375ac0bbdd20b78f20ef8ba6ca5966c49548fa5886557/filelock-4.3.1-py3-none-any.whl.metadata
+  Using cached filelock-4.3.1-py3-none-any.whl.metadata (2.3 kB)
+Collecting fsspec>=2023.5.0 (from huggingface_hub>=0.26->-r requirements.txt (line 17))
+  Obtaining dependency information for fsspec>=2023.5.0 from https://files.pythonhosted.org/packages/6c/c0/a98505f18594f1bce828bb159cec0fcf9860562f1a2c85913409fc8f3d9e/fsspec-2026.9.0-py3-none-any.whl.metadata
+  Using cached fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+Collecting hf-xet<2.0.0,>=1.6.0 (from huggingface_hub>=0.26->-r requirements.txt (line 17))
+  Obtaining dependency information for hf-xet<2.0.0,>=1.6.0 from https://files.pythonhosted.org/packages/97/4d/2c76a992b370ff77d0b5219275779f8c9a7dabb8ee649deb265dfed84d0f/hf_xet-1.8.0-cp38-abi3-win_amd64.whl.metadata
+  Using cached hf_xet-1.8.0-cp38-abi3-win_amd64.whl.metadata (4.9 kB)
+Collecting httpx2<3,>=2.0.0 (from huggingface_hub>=0.26->-r requirements.txt (line 17))
+  Obtaining dependency information for httpx2<3,>=2.0.0 from https://files.pythonhosted.org/packages/77/de/8c4306a3d6aa2495111986addf33a9e561eff4c47552e4c4b9251160d0ad/httpx2-2.16.2-py3-none-any.whl.metadata
+  Using cached httpx2-2.16.2-py3-none-any.whl.metadata (10.0 kB)
+Collecting packaging>=20.9 (from huggingface_hub>=0.26->-r requirements.txt (line 17))
+  Obtaining dependency information for packaging>=20.9 from https://files.pythonhosted.org/packages/ba/7b/5504f91c9c2733f693d7759e50ede5d27119d4da7e5836c46d3b5ff81d56/packaging-26.4-py3-none-any.whl.metadata
+  Using cached packaging-26.4-py3-none-any.whl.metadata (3.5 kB)
+Collecting contourpy>=1.0.1 (from matplotlib>=3.11.2->-r requirements.txt (line 18))
+  Obtaining dependency information for contourpy>=1.0.1 from https://files.pythonhosted.org/packages/50/a9/dab08786bb4d77ef9a046b3c1be923be4e73c5d07d91f5a54e8ea9b09e41/contourpy-1.4.0-cp312-cp312-win_amd64.whl.metadata
+  Using cached contourpy-1.4.0-cp312-cp312-win_amd64.whl.metadata (3.8 kB)
+Collecting cycler>=0.10 (from matplotlib>=3.11.2->-r requirements.txt (line 18))
+  Obtaining dependency information for cycler>=0.10 from https://files.pythonhosted.org/packages/e7/05/c19819d5e3d95294a6f5947fb9b9629efb316b96de511b418c53d245aae6/cycler-0.12.1-py3-none-any.whl.metadata
+  Using cached cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting fonttools>=4.28.2 (from matplotlib>=3.11.2->-r requirements.txt (line 18))
+  Obtaining dependency information for fonttools>=4.28.2 from https://files.pythonhosted.org/packages/37/a4/c64ac8a6259a43b00e1690898d25df897cc6ccdd61b3336c49048ed7e5bc/fonttools-4.69.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached fonttools-4.69.1-cp312-cp312-win_amd64.whl.metadata (150 kB)
+Collecting kiwisolver>=1.3.1 (from matplotlib>=3.11.2->-r requirements.txt (line 18))
+  Obtaining dependency information for kiwisolver>=1.3.1 from https://files.pythonhosted.org/packages/6e/7c/7b210498f9f92e1cd7855f260fa69ef056881087b199ee20c208f0e4189a/kiwisolver-1.5.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached kiwisolver-1.5.1-cp312-cp312-win_amd64.whl.metadata (5.2 kB)
+Collecting pyparsing>=3 (from matplotlib>=3.11.2->-r requirements.txt (line 18))
+  Obtaining dependency information for pyparsing>=3 from https://files.pythonhosted.org/packages/38/bb/d215ee7c73b61497b28a5503f9f53523f294fcc936762b7caf90e0c1c2b5/pyparsing-3.3.3-py3-none-any.whl.metadata
+  Using cached pyparsing-3.3.3-py3-none-any.whl.metadata (5.9 kB)
+Collecting python-dateutil>=2.7 (from matplotlib>=3.11.2->-r requirements.txt (line 18))
+  Obtaining dependency information for python-dateutil>=2.7 from https://files.pythonhosted.org/packages/2f/a9/52b89563d154433d79b51ed1eb4842bf7334cb2696891a7fe135618853d7/python_dateutil-4.0.0-py3-none-any.whl.metadata
+  Using cached python_dateutil-4.0.0-py3-none-any.whl.metadata (7.3 kB)
+Collecting pythonnet (from pywebview->-r requirements.txt (line 20))
+  Obtaining dependency information for pythonnet from https://files.pythonhosted.org/packages/d8/dc/c96a542079a69d3d091e91808fc8aaf9a0d5e2f8e73a63560e4379134bb6/pythonnet-3.2.1-cp311.cp312.cp313.cp314.cp315-none-any.whl.metadata
+  Using cached pythonnet-3.2.1-cp311.cp312.cp313.cp314.cp315-none-any.whl.metadata (6.5 kB)
+Collecting proxy_tools (from pywebview->-r requirements.txt (line 20))
+  Using cached proxy_tools-0.1.0-py3-none-any.whl
+Collecting bottle (from pywebview->-r requirements.txt (line 20))
+  Obtaining dependency information for bottle from https://files.pythonhosted.org/packages/83/f6/b55ec74cfe68c6584163faa311503c20b0da4c09883a41e8e00d6726c954/bottle-0.13.4-py2.py3-none-any.whl.metadata
+  Using cached bottle-0.13.4-py2.py3-none-any.whl.metadata (1.6 kB)
+Collecting colorama>=0.4 (from pytest->-r requirements-dev.txt (line 2))
+  Obtaining dependency information for colorama>=0.4 from https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl.metadata
+  Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+Collecting iniconfig>=2 (from pytest->-r requirements-dev.txt (line 2))
+  Obtaining dependency information for iniconfig>=2 from https://files.pythonhosted.org/packages/56/43/4ca9e49d27a1fcf6bece6f6aec0ea46bb9112489b93d4b688fb415457bdb/iniconfig-2.3.1-py3-none-any.whl.metadata
+  Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting pluggy<2,>=1.6 (from pytest->-r requirements-dev.txt (line 2))
+  Obtaining dependency information for pluggy<2,>=1.6 from https://files.pythonhosted.org/packages/40/9e/2b38731e0fc536806f16490e1a12d7f0dc2a1235aa8cc07bcc75416a7daa/pluggy-1.7.0-py3-none-any.whl.metadata
+  Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting pygments>=2.15 (from pytest->-r requirements-dev.txt (line 2))
+  Obtaining dependency information for pygments>=2.15 from https://files.pythonhosted.org/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl.metadata
+  Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting certifi (from httpx->-r requirements-dev.txt (line 3))
+  Obtaining dependency information for certifi from https://files.pythonhosted.org/packages/6d/39/5eec3296860b94ac20bb8ed807725b88f6adfab3f343df592afd975f5f86/certifi-2026.11.20-py3-none-any.whl.metadata
+  Using cached certifi-2026.11.20-py3-none-any.whl.metadata (2.5 kB)
+Collecting httpcore==1.* (from httpx->-r requirements-dev.txt (line 3))
+  Obtaining dependency information for httpcore==1.* from https://files.pythonhosted.org/packages/7e/f5/f66802a942d491edb555dd61e3a9961140fd64c90bce1eafd741609d334d/httpcore-1.0.9-py3-none-any.whl.metadata
+  Using cached httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Collecting idna (from httpx->-r requirements-dev.txt (line 3))
+  Obtaining dependency information for idna from https://files.pythonhosted.org/packages/58/a2/bb081bab032533a855d44de1d56f8e8426114ff1ba5d1f07a438a0a654f8/idna-3.20-py3-none-any.whl.metadata
+  Using cached idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting pyproject_hooks (from build>=1.0.3->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for pyproject_hooks from https://files.pythonhosted.org/packages/85/11/044d1ae1b4ec0d7af88ee5bc91e081be1022533032b906a7bdabdbb60977/pyproject_hooks-1.3.3-py3-none-any.whl.metadata
+  Using cached pyproject_hooks-1.3.3-py3-none-any.whl.metadata (1.3 kB)
+Collecting httpcore2==2.16.2 (from httpx2<3,>=2.0.0->huggingface_hub>=0.26->-r requirements.txt (line 17))
+  Obtaining dependency information for httpcore2==2.16.2 from https://files.pythonhosted.org/packages/2a/e8/009c347feac27f8960605aa98d55ed263b5870dd4fd80b82fd1d00d5716c/httpcore2-2.16.2-py3-none-any.whl.metadata
+  Using cached httpcore2-2.16.2-py3-none-any.whl.metadata (28 kB)
+Collecting truststore>=0.10 (from httpx2<3,>=2.0.0->huggingface_hub>=0.26->-r requirements.txt (line 17))
+  Obtaining dependency information for truststore>=0.10 from https://files.pythonhosted.org/packages/51/e9/3a7820be2bb0fe53b6bc9c3be26d3d1158004e4c3ab953aa6840b955b1e9/truststore-0.10.5-py3-none-any.whl.metadata
+  Using cached truststore-0.10.5-py3-none-any.whl.metadata (4.5 kB)
+Collecting attrs>=22.2.0 (from jsonschema>=4.19.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for attrs>=22.2.0 from https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl.metadata
+  Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+Collecting jsonschema-specifications>=2023.03.6 (from jsonschema>=4.19.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for jsonschema-specifications>=2023.03.6 from https://files.pythonhosted.org/packages/41/45/1a4ed80516f02155c51f51e8cedb3c1902296743db0bbc66608a0db2814f/jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata
+  Using cached jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+Collecting referencing>=0.28.4 (from jsonschema>=4.19.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for referencing>=0.28.4 from https://files.pythonhosted.org/packages/2c/58/ca301544e1fa93ed4f80d724bf5b194f6e4b945841c5bfd555878eea9fcb/referencing-0.37.0-py3-none-any.whl.metadata
+  Using cached referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+Collecting rpds-py>=0.25.0 (from jsonschema>=4.19.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for rpds-py>=0.25.0 from https://files.pythonhosted.org/packages/1c/84/1700cc748d0eaa747486e4e82882d2575224e6e9a3148df583058850c629/rpds_py-2026.9.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached rpds_py-2026.9.1-cp312-cp312-win_amd64.whl.metadata (4.2 kB)
+Collecting websocket-client!=0.40.0,!=0.41.*,!=0.42.*,>=0.32.0 (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for websocket-client!=0.40.0,!=0.41.*,!=0.42.*,>=0.32.0 from https://files.pythonhosted.org/packages/d5/d2/cc4dc1271e464942db7ee278baae2daa99ee77cb2af744025c04da585a3e/websocket_client-1.9.2-py3-none-any.whl.metadata
+  Using cached websocket_client-1.9.2-py3-none-any.whl.metadata (8.3 kB)
+Collecting requests (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for requests from https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl.metadata
+  Using cached requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting requests-oauthlib (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for requests-oauthlib from https://files.pythonhosted.org/packages/3b/5d/63d4ae3b9daea098d5d6f5da83984853c1bbacd5dc826764b249fe119d24/requests_oauthlib-2.0.0-py2.py3-none-any.whl.metadata
+  Using cached requests_oauthlib-2.0.0-py2.py3-none-any.whl.metadata (11 kB)
+Collecting oauthlib>=4.0.0 (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for oauthlib>=4.0.0 from https://files.pythonhosted.org/packages/df/ef/3b8adde1b32a6f540758bff734d3442c621734c83708e5f02b0ba2f43b84/oauthlib-4.0.1-py3-none-any.whl.metadata
+  Using cached oauthlib-4.0.1-py3-none-any.whl.metadata (8.6 kB)
+Collecting urllib3<3.0.0,>=2.8.0 (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for urllib3<3.0.0,>=2.8.0 from https://files.pythonhosted.org/packages/92/9d/c4e665119135114480843e7ab388fa94d8480650450e6f8e26b70d323a4c/urllib3-2.8.0-py3-none-any.whl.metadata
+  Using cached urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+Collecting durationpy>=0.11 (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for durationpy>=0.11 from https://files.pythonhosted.org/packages/0b/ed/5481140d7cdb857b9c87c3792878fb6fe8997aa454724b376f14895ae99e/durationpy-0.12-py3-none-any.whl.metadata
+  Using cached durationpy-0.12-py3-none-any.whl.metadata (884 bytes)
+Collecting aiohttp<4.0.0,>=3.14.5 (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for aiohttp<4.0.0,>=3.14.5 from https://files.pythonhosted.org/packages/ae/ce/1f08114679d49655b30a6e0a29858375c94b82c1de1a0bd0a20c2fee8b02/aiohttp-3.14.5-cp312-cp312-win_amd64.whl.metadata
+  Using cached aiohttp-3.14.5-cp312-cp312-win_amd64.whl.metadata (8.5 kB)
+Collecting aiohttp-retry>=2.9.1 (from kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for aiohttp-retry>=2.9.1 from https://files.pythonhosted.org/packages/1a/99/84ba7273339d0f3dfa57901b846489d2e5c2cd731470167757f1935fffbd/aiohttp_retry-2.9.1-py3-none-any.whl.metadata
+  Using cached aiohttp_retry-2.9.1-py3-none-any.whl.metadata (8.8 kB)
+Collecting flatbuffers (from onnxruntime>=1.14.1->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for flatbuffers from https://files.pythonhosted.org/packages/e8/2d/d2a548598be01649e2d46231d151a6c56d10b964d94043a335ae56ea2d92/flatbuffers-25.12.19-py2.py3-none-any.whl.metadata
+  Using cached flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)
+Collecting protobuf>=4.25.8 (from onnxruntime>=1.14.1->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for protobuf>=4.25.8 from https://files.pythonhosted.org/packages/8a/55/b77bda4e5e5f5971fb51b07663694690e9afdb9402136c16a522bd621cad/protobuf-7.36.2-cp310-abi3-win_amd64.whl.metadata
+  Using cached protobuf-7.36.2-cp310-abi3-win_amd64.whl.metadata (595 bytes)
+Collecting googleapis-common-protos~=1.57 (from opentelemetry-exporter-otlp-proto-grpc>=1.2.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for googleapis-common-protos~=1.57 from https://files.pythonhosted.org/packages/05/6d/78dc67a9e779e594b49bf62604034d3a6aa428a55afc729cafda4b7333e1/googleapis_common_protos-1.76.0-py3-none-any.whl.metadata
+  Using cached googleapis_common_protos-1.76.0-py3-none-any.whl.metadata (8.5 kB)
+Collecting opentelemetry-exporter-otlp-common==0.66b2 (from opentelemetry-exporter-otlp-proto-grpc>=1.2.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for opentelemetry-exporter-otlp-common==0.66b2 from https://files.pythonhosted.org/packages/a8/47/b3049e30b339c82e3c7ec1fc692185a5d5a3ba65a94c570bb39b2c0b8424/opentelemetry_exporter_otlp_common-0.66b2-py3-none-any.whl.metadata
+  Using cached opentelemetry_exporter_otlp_common-0.66b2-py3-none-any.whl.metadata (1.9 kB)
+Collecting opentelemetry-exporter-otlp-proto-common==1.45.2 (from opentelemetry-exporter-otlp-proto-grpc>=1.2.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for opentelemetry-exporter-otlp-proto-common==1.45.2 from https://files.pythonhosted.org/packages/e6/d6/0f30d38120a949aef70528f845bf539f80df62abb4b8e62fdf69c2b6df5a/opentelemetry_exporter_otlp_proto_common-1.45.2-py3-none-any.whl.metadata
+  Using cached opentelemetry_exporter_otlp_proto_common-1.45.2-py3-none-any.whl.metadata (1.8 kB)
+Collecting opentelemetry-proto==1.45.2 (from opentelemetry-exporter-otlp-proto-grpc>=1.2.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for opentelemetry-proto==1.45.2 from https://files.pythonhosted.org/packages/7e/0d/a0b8f2b9efe2ec1abdf639d3696db9b1563ebeb11d91aac08ba7341e9122/opentelemetry_proto-1.45.2-py3-none-any.whl.metadata
+  Using cached opentelemetry_proto-1.45.2-py3-none-any.whl.metadata (2.3 kB)
+Collecting opentelemetry-semantic-conventions==0.66b2 (from opentelemetry-sdk>=1.2.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for opentelemetry-semantic-conventions==0.66b2 from https://files.pythonhosted.org/packages/67/bd/6bf33ed31521c565931c037e9e81bac47c1acb000e850c6e24220e2a0c00/opentelemetry_semantic_conventions-0.66b2-py3-none-any.whl.metadata
+  Using cached opentelemetry_semantic_conventions-0.66b2-py3-none-any.whl.metadata (2.4 kB)
+Collecting tzdata (from python-dateutil>=2.7->matplotlib>=3.11.2->-r requirements.txt (line 18))
+  Obtaining dependency information for tzdata from https://files.pythonhosted.org/packages/0a/66/9a06c2227fedfd4919f0eaaa8b94377d9730882a7e4f95823c9a331ab5e1/tzdata-2026.6-py2.py3-none-any.whl.metadata
+  Using cached tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting joblib>=1.4.0 (from scikit-learn>=1.1.0->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for joblib>=1.4.0 from https://files.pythonhosted.org/packages/18/53/84099323c2ec4be98d935f63c033ac4151ee83836ca1050ede3b3aadf155/joblib-1.6.0-py3-none-any.whl.metadata
+  Using cached joblib-1.6.0-py3-none-any.whl.metadata (6.5 kB)
+Collecting narwhals>=2.0.1 (from scikit-learn>=1.1.0->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for narwhals>=2.0.1 from https://files.pythonhosted.org/packages/9e/2b/20b4b463c3795dc390db8fa6ec2b5c3e0aea90a760f813305da4c33dd814/narwhals-2.29.0-py3-none-any.whl.metadata
+  Using cached narwhals-2.29.0-py3-none-any.whl.metadata (15 kB)
+Collecting threadpoolctl>=3.5.0 (from scikit-learn>=1.1.0->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for threadpoolctl>=3.5.0 from https://files.pythonhosted.org/packages/54/1b/831f2de4840a25db1dd7b1afea433ccafe6bb10aca07e13264f2079462d0/threadpoolctl-3.8.0-py3-none-any.whl.metadata
+  Using cached threadpoolctl-3.8.0-py3-none-any.whl.metadata (29 kB)
+Collecting setuptools>=77.0.3 (from torch>=2.2->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for setuptools>=77.0.3 from https://files.pythonhosted.org/packages/ef/55/6dc6d6bb953bdfc52519a0059592c52b6e3b8ad51cf8256dffceb55b0610/setuptools-84.2.1-py3-none-any.whl.metadata
+  Using cached setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting sympy>=1.13.3 (from torch>=2.2->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for sympy>=1.13.3 from https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl.metadata
+  Using cached sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting jinja2 (from torch>=2.2->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for jinja2 from https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl.metadata
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting regex>=2025.10.22 (from transformers<6.0.0,>=5.0.0->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for regex>=2025.10.22 from https://files.pythonhosted.org/packages/99/59/108649b133bdefd33e0e53a3dd3a8e9ee5153c86bbc418334b25f40532b8/regex-2026.11.24-cp312-cp312-win_amd64.whl.metadata
+  Using cached regex-2026.11.24-cp312-cp312-win_amd64.whl.metadata (41 kB)
+Collecting safetensors>=0.8.0 (from transformers<6.0.0,>=5.0.0->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for safetensors>=0.8.0 from https://files.pythonhosted.org/packages/1b/6d/3fba214c1e5e0f69991677ec3bc17023f0421776975e1de0c682dca475e2/safetensors-0.8.0-cp310-abi3-win_amd64.whl.metadata
+  Using cached safetensors-0.8.0-cp310-abi3-win_amd64.whl.metadata (4.2 kB)
+Collecting shellingham>=1.3.0 (from typer>=0.9.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for shellingham>=1.3.0 from https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl.metadata
+  Using cached shellingham-1.5.4-py2.py3-none-any.whl.metadata (3.5 kB)
+Collecting clr_loader<0.4.0,>=0.3.1 (from pythonnet->pywebview->-r requirements.txt (line 20))
+  Obtaining dependency information for clr_loader<0.4.0,>=0.3.1 from https://files.pythonhosted.org/packages/5e/da/ec1a6e36624000b6df0dd61183c42342ee5814c073315e802cadaad04d2f/clr_loader-0.3.1-py3-none-any.whl.metadata
+  Using cached clr_loader-0.3.1-py3-none-any.whl.metadata (1.4 kB)
+Collecting aiohappyeyeballs>=2.5.0 (from aiohttp<4.0.0,>=3.14.5->kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for aiohappyeyeballs>=2.5.0 from https://files.pythonhosted.org/packages/71/43/1947f06babed6b3f1d7f38b0c767f52df66bfb2bc10b468c4a7de9eceff2/aiohappyeyeballs-2.7.1-py3-none-any.whl.metadata
+  Using cached aiohappyeyeballs-2.7.1-py3-none-any.whl.metadata (5.9 kB)
+Collecting aiosignal>=1.4.0 (from aiohttp<4.0.0,>=3.14.5->kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for aiosignal>=1.4.0 from https://files.pythonhosted.org/packages/fb/76/641ae371508676492379f16e2fa48f4e2c11741bd63c48be4b12a6b09cba/aiosignal-1.4.0-py3-none-any.whl.metadata
+  Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+Collecting frozenlist>=1.1.1 (from aiohttp<4.0.0,>=3.14.5->kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for frozenlist>=1.1.1 from https://files.pythonhosted.org/packages/b8/af/38e51a553dd66eb064cdf193841f16f077585d4d28394c2fa6235cb41765/frozenlist-1.8.0-cp312-cp312-win_amd64.whl.metadata
+  Using cached frozenlist-1.8.0-cp312-cp312-win_amd64.whl.metadata (21 kB)
+Collecting multidict<8.0,>=4.5 (from aiohttp<4.0.0,>=3.14.5->kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for multidict<8.0,>=4.5 from https://files.pythonhosted.org/packages/68/d5/64108a33c21bde81454b5a400d16baa1378a7d01599de64b131c3e3e3114/multidict-7.2.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached multidict-7.2.1-cp312-cp312-win_amd64.whl.metadata (6.3 kB)
+Collecting propcache>=0.2.0 (from aiohttp<4.0.0,>=3.14.5->kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for propcache>=0.2.0 from https://files.pythonhosted.org/packages/58/7b/6e8ef26f6d510a7916064fec68d55fcbfbdf7eb01e377480d66a122152d8/propcache-0.5.4-cp312-cp312-win_amd64.whl.metadata
+  Using cached propcache-0.5.4-cp312-cp312-win_amd64.whl.metadata (25 kB)
+Collecting yarl<2.0,>=1.25.1 (from aiohttp<4.0.0,>=3.14.5->kubernetes>=28.1.0->chromadb->-r requirements.txt (line 6))
+  Obtaining dependency information for yarl<2.0,>=1.25.1 from https://files.pythonhosted.org/packages/bb/cc/51a7b4abf4ac593b8e7eb3794b28e5a35ae26eed8bc04787628d215af82f/yarl-1.25.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached yarl-1.25.1-cp312-cp312-win_amd64.whl.metadata (115 kB)
+Collecting cffi>=1.17 (from clr_loader<0.4.0,>=0.3.1->pythonnet->pywebview->-r requirements.txt (line 20))
+  Obtaining dependency information for cffi>=1.17 from https://files.pythonhosted.org/packages/d9/79/615cc094e2fb508cade7de88d3b4f6c4ec2bab695c97bce9153dc65aadf5/cffi-2.1.1-cp312-cp312-win_amd64.whl.metadata
+  Using cached cffi-2.1.1-cp312-cp312-win_amd64.whl.metadata (2.6 kB)
+Collecting cloudpickle>=3.0 (from joblib>=1.4.0->scikit-learn>=1.1.0->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for cloudpickle>=3.0 from https://files.pythonhosted.org/packages/a4/42/3b121b42b114919ffc6195a81c1c7065a465f62f46477fbdb87a07699e51/cloudpickle-3.1.3-py3-none-any.whl.metadata
+  Using cached cloudpickle-3.1.3-py3-none-any.whl.metadata (7.1 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch>=2.2->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for mpmath<1.4,>=1.1.0 from https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl.metadata
+  Using cached mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->torch>=2.2->sentence-transformers->-r requirements.txt (line 7))
+  Obtaining dependency information for MarkupSafe>=2.0 from https://files.pythonhosted.org/packages/3f/bf/62495e180b7000aaf30000fff849e933f74264638057176cf46852500adc/markupsafe-3.0.4-cp312-cp312-win_amd64.whl.metadata
+  Using cached markupsafe-3.0.4-cp312-cp312-win_amd64.whl.metadata (2.8 kB)
+Collecting pycparser (from cffi>=1.17->clr_loader<0.4.0,>=0.3.1->pythonnet->pywebview->-r requirements.txt (line 20))
+  Obtaining dependency information for pycparser from https://files.pythonhosted.org/packages/b6/ae/315bbeee126a769cbde43cf4908acb4b40408d8bf8bbf334dd7368d8dadf/pycparser-3.12-py3-none-any.whl.metadata
+  Using cached pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+Using cached fastapi-0.165.0-py3-none-any.whl (159 kB)
+Using cached python_multipart-0.0.34-py3-none-any.whl (32 kB)
+Using cached pydantic-2.14.4-py3-none-any.whl (494 kB)
+Using cached pydantic_core-2.50.5-cp312-cp312-win_amd64.whl (2.3 MB)
+Using cached chromadb-1.5.9-cp39-abi3-win_amd64.whl (23.5 MB)
+Using cached sentence_transformers-6.3.0-py3-none-any.whl (780 kB)
+Using cached rank_bm25-0.2.2-py3-none-any.whl (8.6 kB)
+Using cached pymupdf-2.2-cp311-abi3-win_amd64.whl (63.1 MB)
+Using cached pymupdf_layout-2.2-py3-none-any.whl (1.0 kB)
+Using cached pymupdf4llm-2.2-py3-none-any.whl (1.0 kB)
+Using cached python_docx-1.2.0-py3-none-any.whl (252 kB)
+Using cached python_pptx-1.0.2-py3-none-any.whl (472 kB)
+Using cached openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
+Using cached reportlab-5.1.2-py3-none-any.whl (2.0 MB)
+Using cached markdown_it_py-4.3.0-py3-none-any.whl (96 kB)
+Using cached huggingface_hub-2.4.0-py3-none-any.whl (857 kB)
+Using cached matplotlib-3.11.2-cp312-cp312-win_amd64.whl (9.3 MB)
+Using cached pywebview-6.2.1-py3-none-any.whl (525 kB)
+Using cached pytest-9.2.0-py3-none-any.whl (411 kB)
+Using cached httpx-0.28.1-py3-none-any.whl (73 kB)
+Using cached httpcore-1.0.9-py3-none-any.whl (78 kB)
+Using cached annotated_doc-0.0.7-py3-none-any.whl (5.3 kB)
+Using cached annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Using cached anyio-4.16.0-py3-none-any.whl (134 kB)
+Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl (150 kB)
+Using cached build-1.6.1-py3-none-any.whl (31 kB)
+Using cached click-8.5.1-py3-none-any.whl (126 kB)
+Using cached colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Using cached contourpy-1.4.0-cp312-cp312-win_amd64.whl (234 kB)
+Using cached cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Using cached filelock-4.3.1-py3-none-any.whl (244 kB)
+Using cached fonttools-4.69.1-cp312-cp312-win_amd64.whl (3.0 MB)
+Using cached fsspec-2026.9.0-py3-none-any.whl (221 kB)
+Using cached grpcio-1.85.4-cp312-cp312-win_amd64.whl (5.6 MB)
+Using cached h11-0.16.0-py3-none-any.whl (37 kB)
+Using cached hf_xet-1.8.0-cp38-abi3-win_amd64.whl (3.9 MB)
+Using cached httptools-0.9.0-cp312-cp312-win_amd64.whl (92 kB)
+Using cached httpx2-2.16.2-py3-none-any.whl (97 kB)
+Using cached httpcore2-2.16.2-py3-none-any.whl (85 kB)
+Using cached idna-3.20-py3-none-any.whl (69 kB)
+Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Using cached jsonschema-4.26.0-py3-none-any.whl (90 kB)
+Using cached kiwisolver-1.5.1-cp312-cp312-win_amd64.whl (70 kB)
+Using cached kubernetes-37.0.3-py2.py3-none-any.whl (7.5 MB)
+Using cached certifi-2026.11.20-py3-none-any.whl (127 kB)
+Using cached lxml-6.1.3-cp312-cp312-win_amd64.whl (4.0 MB)
+Using cached mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Using cached mmh3-5.3.1-cp312-cp312-win_amd64.whl (41 kB)
+Using cached numpy-2.5.5-cp312-cp312-win_amd64.whl (12.6 MB)
+Using cached onnxruntime-1.32.0-cp312-cp312-win_amd64.whl (16.7 MB)
+Using cached opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+Using cached opentelemetry_exporter_otlp_proto_grpc-1.45.2-py3-none-any.whl (19 kB)
+Using cached opentelemetry_exporter_otlp_common-0.66b2-py3-none-any.whl (12 kB)
+Using cached opentelemetry_exporter_otlp_proto_common-1.45.2-py3-none-any.whl (15 kB)
+Using cached opentelemetry_proto-1.45.2-py3-none-any.whl (72 kB)
+Using cached opentelemetry_sdk-1.45.2-py3-none-any.whl (141 kB)
+Using cached opentelemetry_semantic_conventions-0.66b2-py3-none-any.whl (206 kB)
+Using cached orjson-3.13.0-cp312-cp312-win_amd64.whl (121 kB)
+Using cached overrides-7.7.0-py3-none-any.whl (17 kB)
+Using cached packaging-26.4-py3-none-any.whl (140 kB)
+Using cached pillow-13.0.0-cp312-cp312-win_amd64.whl (7.3 MB)
+Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+Using cached pybase64-1.5.2-cp312-cp312-win_amd64.whl (44 kB)
+Using cached pydantic_settings-2.16.3-py3-none-any.whl (82 kB)
+Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+Using cached pyparsing-3.3.3-py3-none-any.whl (126 kB)
+Using cached pypika-0.51.1-py2.py3-none-any.whl (60 kB)
+Using cached python_dateutil-4.0.0-py3-none-any.whl (92 kB)
+Using cached python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+Using cached pyyaml-6.0.4-cp312-cp312-win_amd64.whl (154 kB)
+Using cached rich-15.0.0-py3-none-any.whl (310 kB)
+Using cached scikit_learn-1.9.1-cp312-cp312-win_amd64.whl (8.3 MB)
+Using cached scipy-1.18.1-cp312-cp312-win_amd64.whl (36.7 MB)
+Using cached starlette-1.10.0-py3-none-any.whl (80 kB)
+Using cached tenacity-9.2.1-py3-none-any.whl (32 kB)
+Using cached tokenizers-0.23.3-cp310-abi3-win_amd64.whl (2.9 MB)
+Using cached torch-2.15.0-cp312-cp312-win_amd64.whl (126.7 MB)
+Using cached networkx-3.7-py3-none-any.whl (2.1 MB)
+Using cached tqdm-4.70.1-py3-none-any.whl (80 kB)
+Using cached transformers-5.24.1-py3-none-any.whl (13.6 MB)
+Using cached typer-0.29.2-py3-none-any.whl (121 kB)
+Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Using cached typing_inspection-0.4.5-py3-none-any.whl (14 kB)
+Using cached watchfiles-1.3.0-cp310-abi3-win_amd64.whl (290 kB)
+Using cached websockets-17.4-cp312-cp312-win_amd64.whl (219 kB)
+Using cached xlsxwriter-3.3.4-py3-none-any.whl (192 kB)
+Using cached bottle-0.13.4-py2.py3-none-any.whl (103 kB)
+Using cached charset_normalizer-3.5.3-cp312-cp312-win_amd64.whl (214 kB)
+Using cached et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
+Using cached importlib_resources-7.1.0-py3-none-any.whl (37 kB)
+Using cached psutil-7.2.2-cp37-abi3-win_amd64.whl (137 kB)
+Using cached pythonnet-3.2.1-cp311.cp312.cp313.cp314.cp315-none-any.whl (222 kB)
+Using cached tabulate-0.10.0-py3-none-any.whl (39 kB)
+Using cached uvicorn-0.54.0-py3-none-any.whl (87 kB)
+Using cached aiohttp-3.14.5-cp312-cp312-win_amd64.whl (506 kB)
+Using cached aiohttp_retry-2.9.1-py3-none-any.whl (10.0 kB)
+Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+Using cached clr_loader-0.3.1-py3-none-any.whl (55 kB)
+Using cached durationpy-0.12-py3-none-any.whl (4.4 kB)
+Using cached googleapis_common_protos-1.76.0-py3-none-any.whl (307 kB)
+Using cached joblib-1.6.0-py3-none-any.whl (306 kB)
+Using cached jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+Using cached narwhals-2.29.0-py3-none-any.whl (501 kB)
+Using cached oauthlib-4.0.1-py3-none-any.whl (161 kB)
+Using cached protobuf-7.36.2-cp310-abi3-win_amd64.whl (456 kB)
+Using cached referencing-0.37.0-py3-none-any.whl (26 kB)
+Using cached regex-2026.11.24-cp312-cp312-win_amd64.whl (280 kB)
+Using cached rpds_py-2026.9.1-cp312-cp312-win_amd64.whl (222 kB)
+Using cached safetensors-0.8.0-cp310-abi3-win_amd64.whl (355 kB)
+Using cached setuptools-84.2.1-py3-none-any.whl (876 kB)
+Using cached shellingham-1.5.4-py2.py3-none-any.whl (9.8 kB)
+Using cached sympy-1.14.0-py3-none-any.whl (6.3 MB)
+Using cached threadpoolctl-3.8.0-py3-none-any.whl (32 kB)
+Using cached truststore-0.10.5-py3-none-any.whl (19 kB)
+Using cached urllib3-2.8.0-py3-none-any.whl (135 kB)
+Using cached websocket_client-1.9.2-py3-none-any.whl (95 kB)
+Using cached flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+Using cached requests_oauthlib-2.0.0-py2.py3-none-any.whl (24 kB)
+Using cached tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+Using cached aiohappyeyeballs-2.7.1-py3-none-any.whl (15 kB)
+Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+Using cached cffi-2.1.1-cp312-cp312-win_amd64.whl (185 kB)
+Using cached cloudpickle-3.1.3-py3-none-any.whl (22 kB)
+Using cached frozenlist-1.8.0-cp312-cp312-win_amd64.whl (44 kB)
+Using cached markupsafe-3.0.4-cp312-cp312-win_amd64.whl (14 kB)
+Using cached mpmath-1.3.0-py3-none-any.whl (536 kB)
+Using cached multidict-7.2.1-cp312-cp312-win_amd64.whl (95 kB)
+Using cached propcache-0.5.4-cp312-cp312-win_amd64.whl (46 kB)
+Using cached yarl-1.25.1-cp312-cp312-win_amd64.whl (102 kB)
+Using cached pycparser-3.12-py3-none-any.whl (62 kB)
+Installing collected packages: pypika, proxy_tools, mpmath, flatbuffers, bottle, XlsxWriter, websockets, websocket-client, urllib3, tzdata, typing-extensions, truststore, threadpoolctl, tenacity, tabulate, sympy, shellingham, setuptools, safetensors, rpds-py, regex, pyyaml, python-multipart, python-dotenv, pyproject_hooks, pyparsing, pygments, pycparser, pybase64, psutil, protobuf, propcache, pluggy, Pillow, packaging, overrides, orjson, oauthlib, numpy, networkx, narwhals, multidict, mmh3, mdurl, MarkupSafe, lxml, kiwisolver, iniconfig, importlib-resources, idna, httptools, hf-xet, h11, fsspec, frozenlist, fonttools, filelock, et-xmlfile, durationpy, cycler, colorama, cloudpickle, click, charset-normalizer, certifi, bcrypt, attrs, annotated-types, annotated-doc, aiohappyeyeballs, yarl, uvicorn, typing-inspection, tqdm, scipy, requests, reportlab, referencing, rank-bm25, python-pptx, python-docx, python-dateutil, pytest, pydantic-core, opentelemetry-proto, opentelemetry-api, openpyxl, onnxruntime, markdown-it-py, joblib, jinja2, httpcore2, httpcore, grpcio, googleapis-common-protos, contourpy, cffi, build, anyio, aiosignal, watchfiles, torch, starlette, scikit-learn, rich, requests-oauthlib, pydantic, opentelemetry-semantic-conventions, opentelemetry-exporter-otlp-proto-common, matplotlib, jsonschema-specifications, httpx2, httpx, clr_loader, aiohttp, typer, pythonnet, pydantic-settings, opentelemetry-sdk, jsonschema, huggingface_hub, fastapi, aiohttp-retry, tokenizers, pywebview, opentelemetry-exporter-otlp-common, kubernetes, transformers, opentelemetry-exporter-otlp-proto-grpc, sentence-transformers, chromadb, pymupdf4llm, pymupdf-layout, pymupdf
+Successfully installed MarkupSafe-3.0.4 Pillow-13.0.0 XlsxWriter-3.3.4 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiohttp-retry-2.9.1 aiosignal-1.4.0 annotated-doc-0.0.7 annotated-types-0.8.0 anyio-4.16.0 attrs-26.1.0 bcrypt-5.0.0 bottle-0.13.4 build-1.6.1 certifi-2026.11.20 cffi-2.1.1 charset-normalizer-3.5.3 chromadb-1.5.9 click-8.5.1 cloudpickle-3.1.3 clr_loader-0.3.1 colorama-0.4.6 contourpy-1.4.0 cycler-0.12.1 durationpy-0.12 et-xmlfile-2.0.0 fastapi-0.165.0 filelock-4.3.1 flatbuffers-25.12.19 fonttools-4.69.1 frozenlist-1.8.0 fsspec-2026.9.0 googleapis-common-protos-1.76.0 grpcio-1.85.4 h11-0.16.0 hf-xet-1.8.0 httpcore-1.0.9 httpcore2-2.16.2 httptools-0.9.0 httpx-0.28.1 httpx2-2.16.2 huggingface_hub-2.4.0 idna-3.20 importlib-resources-7.1.0 iniconfig-2.3.1 jinja2-3.1.6 joblib-1.6.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 kiwisolver-1.5.1 kubernetes-37.0.3 lxml-6.1.3 markdown-it-py-4.3.0 matplotlib-3.11.2 mdurl-0.1.2 mmh3-5.3.1 mpmath-1.3.0 multidict-7.2.1 narwhals-2.29.0 networkx-3.7 numpy-2.5.5 oauthlib-4.0.1 onnxruntime-1.32.0 openpyxl-3.1.5 opentelemetry-api-1.45.2 opentelemetry-exporter-otlp-common-0.66b2 opentelemetry-exporter-otlp-proto-common-1.45.2 opentelemetry-exporter-otlp-proto-grpc-1.45.2 opentelemetry-proto-1.45.2 opentelemetry-sdk-1.45.2 opentelemetry-semantic-conventions-0.66b2 orjson-3.13.0 overrides-7.7.0 packaging-26.4 pluggy-1.7.0 propcache-0.5.4 protobuf-7.36.2 proxy_tools-0.1.0 psutil-7.2.2 pybase64-1.5.2 pycparser-3.12 pydantic-2.14.4 pydantic-core-2.50.5 pydantic-settings-2.16.3 pygments-2.21.0 pymupdf-2.2 pymupdf-layout-2.2 pymupdf4llm-2.2 pyparsing-3.3.3 pypika-0.51.1 pyproject_hooks-1.3.3 pytest-9.2.0 python-dateutil-4.0.0 python-docx-1.2.0 python-dotenv-1.2.4 python-multipart-0.0.34 python-pptx-1.0.2 pythonnet-3.2.1 pywebview-6.2.1 pyyaml-6.0.4 rank-bm25-0.2.2 referencing-0.37.0 regex-2026.11.24 reportlab-5.1.2 requests-2.34.2 requests-oauthlib-2.0.0 rich-15.0.0 rpds-py-2026.9.1 safetensors-0.8.0 scikit-learn-1.9.1 scipy-1.18.1 sentence-transformers-6.3.0 setuptools-84.2.1 shellingham-1.5.4 starlette-1.10.0 sympy-1.14.0 tabulate-0.10.0 tenacity-9.2.1 threadpoolctl-3.8.0 tokenizers-0.23.3 torch-2.15.0 tqdm-4.70.1 transformers-5.24.1 truststore-0.10.5 typer-0.29.2 typing-extensions-4.16.0 typing-inspection-0.4.5 tzdata-2026.6 urllib3-2.8.0 uvicorn-0.54.0 watchfiles-1.3.0 websocket-client-1.9.2 websockets-17.4 yarl-1.25.1
+  [ok] Dependencies installed
+  [..] Installing the local AI engine (llama.cpp, ~200 MB)...
+       NVIDIA GPU detected - trying the CUDA wheel first...
+       CUDA wheel cannot load: CUDA 12 runtime (cudart64_12.dll) not found on PATH.
+       (Install the NVIDIA CUDA Toolkit 12.x to enable it. Note the newest prebuilt CUDA wheel
+        is llama-cpp-python 0.3.4, which predates Qwen3.5 GGUF support.)
+       CUDA wheel failed to install or import - cleaning up and trying the CPU wheel...
+       Trying the prebuilt CPU wheel (llama.cpp CPU index)...
+  [ok] Engine installed (CPU)
+  [..] Running offline sanity tests...
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv\Lib\site-packages\fastapi\applications.py:5039
+  C:\work\fork-clone\.venv\Lib\site-packages\fastapi\applications.py:5039: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+302 passed, 2 warnings in 45.06s
+  [ok] Self-tests passed
+
+  Setup complete. Starting Fortis...
+  (First chat message downloads the AI model - about 3.4 GB, one time.)
+
+powershell.exe : INFO:core.main:Initializing client/engagement database
+At line:11 char:1
++ powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Fi ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO:core.main:...gement database:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+INFO:core.main:Seeding framework reference corpus: ['NIST_CSF', 'OWASP_TOP10', 'CIS_CONTROLS', 'MITRE_ATTACK', 
+'CIS_BENCHMARKS', 'ISO_27001', 'PCI_DSS', 'SOC_2', 'GDPR', 'HIPAA', 'NIST_800-53', 'CWE_TOP25']
+=== exit code 0 | finished 11/26/2026 09:22:26 | elapsed 00:13:29.5945231

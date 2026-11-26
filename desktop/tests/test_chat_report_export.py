@@ -82,6 +82,15 @@ def stub_llm(monkeypatch):
     monkeypatch.setattr("core.routers.chat.chat", fake_chat)
     monkeypatch.setattr("core.routers.chat.chat_stream", fake_chat_stream)
 
+    # The LLM is faked above, so these tests exercise real report rendering:
+    # opt out of the no-model placeholder gate explicitly. (They used to pass
+    # only because the suite leaked a fake model selection into the user's
+    # real data dir, which made the backend look loaded.) Tests that need
+    # the gate re-patch core.report_intent.is_stub_backend themselves.
+    import core.report_intent as _ri
+    monkeypatch.setattr(_ri, "is_stub_backend", lambda: False)
+    monkeypatch.setattr("server.orchestration.is_stub_backend", lambda: _ri.is_stub_backend())
+
 
 @pytest.fixture
 def client():

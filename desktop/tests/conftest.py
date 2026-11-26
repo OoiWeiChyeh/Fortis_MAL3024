@@ -35,5 +35,15 @@ os.environ["HIERARCHICAL_THRESHOLD_TOKENS"] = "200"
 os.environ["MAP_BATCH_TOKENS"] = "80"
 os.environ["RAG_LEVEL"] = "standard"
 os.environ["RERANK_BACKEND"] = "none"
+os.environ["FORTIS_ALLOWED_HOSTS"] = "127.0.0.1,localhost,::1,testserver"  # TestClient sends Host: testserver
+# Sandbox the whole data root (incl. models/active_model.json). Without this,
+# set_selection() in test_tiers_roles.py overwrote the user's real
+# %APPDATA%\Fortis\models\active_model.json with a temp path: setup.ps1 runs
+# the suite right before launching the app, so every setup broke the model
+# choice, and later tests flipped from the stub to the llama backend
+# depending on test order (the intermittent report-test failures).
+os.environ["FORTIS_DATA_DIR"] = _tmp
+os.environ["FORTIS_MODELS_DIR"] = os.path.join(_tmp, "models")
+os.environ["FORTIS_LLM_BACKEND"] = "stub"
 
 import pytest  # noqa: E402

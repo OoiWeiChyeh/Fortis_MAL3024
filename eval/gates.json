@@ -1,0 +1,6 @@
+{
+  "_comment": "Deterministic quality gates enforced by desktop/tests/test_eval_harness.py in CI. Raise, never lower, without a written reason in the commit.",
+  "ioc_micro_precision": 0.97,
+  "ioc_micro_recall": 1.0,
+  "ioc_invented_max": 0
+}

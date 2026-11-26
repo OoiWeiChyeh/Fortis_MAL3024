@@ -1,0 +1,381 @@
+[
+ {
+  "id": "ADV-01",
+  "title": "Active exploitation of PAN-OS GlobalProtect command injection",
+  "style": "cisa",
+  "priority": "P1",
+  "exposed_assets": [
+   "fw-edge-01"
+  ],
+  "techniques": [
+   "T1190",
+   "T1059.004",
+   "T1053.003"
+  ],
+  "cves": [
+   "CVE-2024-3400"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "KEV-listed, exploited in the wild, and the client runs PAN-OS GlobalProtect on its internet edge.",
+  "iocs": {
+   "sha256": [
+    "439f6ff71c4df2d450c338f61b649b564346bb8e7eaf15b0ab1fa2336da532a7"
+   ],
+   "ipv4": [
+    "198.51.100.77",
+    "203.0.113.41"
+   ],
+   "domain": [
+    "kq7-sync-portal.top"
+   ],
+   "url": [
+    "https://kq7-sync-portal.top/update/policy.py"
+   ]
+  }
+ },
+ {
+  "id": "ADV-02",
+  "title": "Session hijacking through NetScaler information disclosure",
+  "style": "mycert",
+  "priority": "P1",
+  "exposed_assets": [
+   "adc-dmz-01"
+  ],
+  "techniques": [
+   "T1190",
+   "T1550.004",
+   "T1078"
+  ],
+  "cves": [
+   "CVE-2023-4966"
+  ],
+  "sector_targeted": true,
+  "priority_rationale": "KEV-listed; the client runs NetScaler ADC as its remote-access gateway; financial sector named.",
+  "iocs": {
+   "ipv4": [
+    "192.0.2.144",
+    "198.51.100.9"
+   ],
+   "email": [
+    "it-helpdesk@nsg-verify.xyz"
+   ],
+   "domain": [
+    "nsg-verify.xyz"
+   ]
+  }
+ },
+ {
+  "id": "ADV-03",
+  "title": "Invoice-themed spear-phishing against Malaysian finance teams",
+  "style": "mycert",
+  "priority": "P2",
+  "exposed_assets": [],
+  "techniques": [
+   "T1566.001",
+   "T1204.002",
+   "T1059.001",
+   "T1547.001",
+   "T1071.001"
+  ],
+  "cves": [],
+  "sector_targeted": true,
+  "priority_rationale": "No vulnerability, but an active campaign targeting the client's sector: hunt for the indicators now.",
+  "iocs": {
+   "md5": [
+    "6a75e62e689aff660a2f142cbfd22402"
+   ],
+   "sha1": [
+    "63464bb3c69d6008c611bab82884eb354162328b"
+   ],
+   "sha256": [
+    "22d4b42456ee671664f7a11c5508986dd882721bc31b0085dd220401012ce0b0"
+   ],
+   "email": [
+    "billing@lintas-freight.online"
+   ],
+   "domain": [
+    "lintas-freight.online",
+    "cdn-lintasfreight.site",
+    "telemetry-mx.icu"
+   ],
+   "url": [
+    "https://cdn-lintasfreight.site/inv/download.php"
+   ],
+   "ipv4": [
+    "203.0.113.200"
+   ]
+  }
+ },
+ {
+  "id": "ADV-04",
+  "title": "Mass data theft through MOVEit Transfer SQL injection",
+  "style": "cisa",
+  "priority": "P3",
+  "exposed_assets": [],
+  "techniques": [
+   "T1190",
+   "T1505.003",
+   "T1567"
+  ],
+  "cves": [
+   "CVE-2023-34362"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "KEV-listed with known ransomware/extortion use, but the client does not run MOVEit Transfer: verify, hunt, monitor.",
+  "iocs": {
+   "sha256": [
+    "e22d0ba6f3d3774800b3f8e5f37ae94cbaa843d33461c31324199cdbb61fa767"
+   ],
+   "ipv4": [
+    "198.51.100.133",
+    "192.0.2.61"
+   ],
+   "domain": [
+    "dl-mvt-archive.cloud"
+   ]
+  }
+ },
+ {
+  "id": "ADV-05",
+  "title": "FortiOS SSL-VPN out-of-bounds write exploited",
+  "style": "cisa",
+  "priority": "P1",
+  "exposed_assets": [
+   "fgt-branch-jb",
+   "fgt-branch-pg"
+  ],
+  "techniques": [
+   "T1190",
+   "T1133"
+  ],
+  "cves": [
+   "CVE-2024-21762"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "KEV-listed and the client's branch FortiGates expose SSL-VPN.",
+  "iocs": {
+   "ipv4": [
+    "203.0.113.88",
+    "198.51.100.250"
+   ],
+   "domain": [
+    "fgt-cfg-backup.top"
+   ],
+   "url": [
+    "https://fgt-cfg-backup.top/x/sslvpnd"
+   ]
+  }
+ },
+ {
+  "id": "ADV-06",
+  "title": "OpenSSH signal-handler race condition (regreSSHion)",
+  "style": "vendor",
+  "priority": "P2",
+  "exposed_assets": [
+   "bastion-01"
+  ],
+  "techniques": [
+   "T1190"
+  ],
+  "cves": [
+   "CVE-2024-6387"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "The client runs an affected OpenSSH on an internet-facing bastion, but exploitation is hard and not KEV-listed: patch in the next window.",
+  "iocs": {}
+ },
+ {
+  "id": "ADV-07",
+  "title": "Chained Ivanti Connect Secure authentication bypass and command injection",
+  "style": "cisa",
+  "priority": "P3",
+  "exposed_assets": [],
+  "techniques": [
+   "T1190",
+   "T1059",
+   "T1505.003"
+  ],
+  "cves": [
+   "CVE-2023-46805",
+   "CVE-2024-21887"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "Both CVEs are KEV-listed, but the client has no Ivanti appliances: confirm the inventory and hunt.",
+  "iocs": {
+   "sha256": [
+    "11595fd13a17bed884bd41ea33c9f60404f4f7fbd03356fd99ab696e77541e20"
+   ],
+   "md5": [
+    "7b2c52b74fc7f13dde4bedcd11e0a39d"
+   ],
+   "ipv4": [
+    "192.0.2.230",
+    "203.0.113.17"
+   ],
+   "domain": [
+    "ivt-sync-cdn.xyz"
+   ]
+  }
+ },
+ {
+  "id": "ADV-08",
+  "title": "ScreenConnect authentication bypass used to deploy ransomware",
+  "style": "mycert",
+  "priority": "P1",
+  "exposed_assets": [
+   "msp-remote-01"
+  ],
+  "techniques": [
+   "T1190",
+   "T1219",
+   "T1136.001",
+   "T1486",
+   "T1490"
+  ],
+  "cves": [
+   "CVE-2024-1709"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "KEV-listed with known ransomware use, and the client's managed-service provider reaches it through ScreenConnect.",
+  "iocs": {
+   "sha256": [
+    "f0d00baff0ffa23576958677193c1ee6f89bf289c4f7d01ff38d31c01e9090d5"
+   ],
+   "ipv4": [
+    "198.51.100.66"
+   ],
+   "domain": [
+    "files-sc-support.online"
+   ],
+   "url": [
+    "http://files-sc-support.online/agent.exe"
+   ]
+  }
+ },
+ {
+  "id": "ADV-09",
+  "title": "Information-stealer spread through poisoned search results",
+  "style": "vendor",
+  "priority": "P4",
+  "exposed_assets": [],
+  "techniques": [
+   "T1608.006",
+   "T1204.002",
+   "T1555.003",
+   "T1041"
+  ],
+  "cves": [],
+  "sector_targeted": false,
+  "priority_rationale": "Consumer-focused campaign with no vulnerability, no matching asset and no sector targeting: informational, add indicators to blocklists.",
+  "iocs": {
+   "md5": [
+    "28a01d56227021411aa1f26d8f16f5ab"
+   ],
+   "sha256": [
+    "6eef559ca7c84511f29bbd4eb0fc94f901f8b52ed5139fcbeb57368d9c129039"
+   ],
+   "domain": [
+    "pdf-toolkit-free.site",
+    "api-stats-collector.xyz"
+   ],
+   "url": [
+    "https://api-stats-collector.xyz/v2/upload"
+   ],
+   "ipv4": [
+    "192.0.2.199"
+   ]
+  }
+ },
+ {
+  "id": "ADV-10",
+  "title": "Jenkins CLI arbitrary file read exploited",
+  "style": "cisa",
+  "priority": "P1",
+  "exposed_assets": [
+   "ci-jenkins-01"
+  ],
+  "techniques": [
+   "T1190",
+   "T1552.001",
+   "T1005"
+  ],
+  "cves": [
+   "CVE-2024-23897"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "KEV-listed with known ransomware use and the client runs Jenkins (internal CI): patch now.",
+  "iocs": {
+   "ipv4": [
+    "203.0.113.150",
+    "198.51.100.5"
+   ]
+  }
+ },
+ {
+  "id": "ADV-11",
+  "title": "WinRAR spoofed-extension exploit sent to trading desks",
+  "style": "mycert",
+  "priority": "P1",
+  "exposed_assets": [
+   "trader-ws-pool"
+  ],
+  "techniques": [
+   "T1566.001",
+   "T1204.002",
+   "T1203"
+  ],
+  "cves": [
+   "CVE-2023-38831"
+  ],
+  "sector_targeted": true,
+  "priority_rationale": "KEV-listed, WinRAR is installed on the trader workstation pool, and brokerages are named as targets.",
+  "iocs": {
+   "md5": [
+    "85451a6ecb9877c8941affbd97a80422"
+   ],
+   "sha256": [
+    "9b1372ffc5947f648bbfea030838e3fa4ecfafe8c8c9bd3317c93787882c7859"
+   ],
+   "email": [
+    "research@aseantrade-insights.com"
+   ],
+   "domain": [
+    "aseantrade-insights.com",
+    "update.tradeview-cdn.top"
+   ],
+   "url": [
+    "https://update.tradeview-cdn.top/api/beacon"
+   ]
+  }
+ },
+ {
+  "id": "ADV-12",
+  "title": "Cisco IOS XE web UI privilege escalation exploited",
+  "style": "vendor",
+  "priority": "P1",
+  "exposed_assets": [
+   "core-sw-01"
+  ],
+  "techniques": [
+   "T1190",
+   "T1136.001",
+   "T1505.003"
+  ],
+  "cves": [
+   "CVE-2023-20198"
+  ],
+  "sector_targeted": false,
+  "priority_rationale": "KEV-listed and the client's core switches run IOS XE with the HTTP server enabled.",
+  "iocs": {
+   "domain": [
+    "ios-cfg-check.xyz"
+   ],
+   "url": [
+    "https://ios-cfg-check.xyz/webui/logoutconfirm.html"
+   ],
+   "ipv4": [
+    "192.0.2.17"
+   ]
+  }
+ }
+]

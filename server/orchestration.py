@@ -136,7 +136,60 @@ class Orchestrator:
             return self._close_active()
         if low.startswith("/report"):
             return self._report_cmd(t[len("/report"):])
+        if low.startswith("/triage"):
+            return self._triage_cmd(t[len("/triage"):])
+        if low.startswith("/iocs"):
+            return self._iocs_cmd(t[len("/iocs"):])
         return None
+
+    def _iocs_cmd(self, body: str) -> str:
+        from core.intel.enrich import enrich_text, catalogue_versions
+        from core.intel.ioc import defang
+
+        text = body.strip()
+        if not text:
+            return "Usage: `/iocs <advisory text>` - extracts and enriches indicators (deterministic, no model)."
+        found = enrich_text(text)
+        if not found:
+            return "No indicators found."
+        v = catalogue_versions()
+        rows = ["| Type | Indicator | Enrichment |", "|---|---|---|"]
+        for i in found:
+            extra = ""
+            if i["type"] == "attack_technique":
+                extra = f"{i.get('name', '')} ({i['status']})"
+            elif i["type"] == "cve":
+                extra = f"KEV: {i.get('vendor', '')} {i.get('product', '')}, ransomware {i.get('ransomware', '-')}" if i.get("kev") else "not in KEV"
+            elif i.get("notes"):
+                extra = ", ".join(i["notes"])
+            rows.append(f"| {i['type']} | `{defang(i['value'], i['type'])}` | {extra} |")
+        head = f"**{len(found)} indicators** (ATT&CK v{v['attack']}, CISA KEV {v['kev']}):"
+        return head + "\n\n" + "\n".join(rows)
+
+    def _triage_cmd(self, body: str) -> str:
+        body = body.strip()
+        eng = self.active_engagement()
+        if not eng:
+            return "No active engagement. Use `/new-engagement Client :: Name` or the + button."
+        if not body:
+            return ("Usage: `/triage <pasted advisory>` or `/triage <uploaded file name>`. Upload the client's asset "
+                    "inventory (CSV with a product column) to the engagement first so exposure can be checked.")
+        if _is_stub_backend():
+            return "Triage needs a loaded model - open **Model** and pick a tier first."
+        from fastapi import HTTPException
+        from core.routers.intel import run_triage
+
+        is_file = body in eng.get("files", [])
+        try:
+            result = _run_async(run_triage(eng["id"], filename=body) if is_file else run_triage(eng["id"], text=body))
+        except HTTPException as e:
+            return f"Triage failed: {e.detail}"
+        try:
+            store.append_chat_message(eng["id"], "user", "/triage " + (body if is_file else body[:200] + ("..." if len(body) > 200 else "")))
+            store.append_chat_message(eng["id"], "assistant", result["markdown"])
+        except Exception:
+            pass
+        return result["markdown"]
 
     def _report_cmd(self, body: str) -> str:
         parts = body.strip().split()

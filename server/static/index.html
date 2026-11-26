@@ -8,98 +8,156 @@
 <script src="/ui/vendor/markdown-it.min.js"></script>
 <script src="/ui/vendor/mermaid.min.js"></script>
 <style>
+/* ===== Fortis "midnight navy" theme =====
+   Contrast (WCAG 2.2, computed): --text/--bg2 15.4:1, --muted/--bg2 8.5:1,
+   --muted/--bg4 6.0:1, --accent-ink/--bg2 8.1:1, white on primary gradient
+   5.2-6.7:1 (lighter blues fail for white text, so they are glow-only). */
 :root {
-  --bg: #0a0e14; --bg2: #111820; --bg3: #1a232e; --border: #26303d;
-  --text: #d9e2ec; --muted: #9aa5b1; --accent: #5b8fc4; --accent2: #4a7ab8;
-  --ok: #2fb892; --warn: #d9a036; --err: #d9535f;
-  --crit: #c43a45; --high: #d96b29; --med: #c9a227; --low: #5b8fc4; --info: #6b7a8f;
+  color-scheme: dark;
+  --bg: #050b1c; --bg2: #0b1631; --bg3: #12224a; --bg4: #183065; --border: #22386b; --border-strong: #3456a0;
+  --text: #e8eefb; --muted: #a3b3d4; --accent: #2563eb; --accent-hi: #3b82f6; --accent-ink: #7fb0ff; --accent2: #2563eb;
+  --ring: #9cc3ff; --glow: rgba(59,130,246,.45);
+  --ok: #34d399; --warn: #fbbf24; --err: #f87171;
+  --crit: #f87171; --high: #fb923c; --med: #facc15; --low: #7fb0ff; --info: #a3b3d4;
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px;
+  --radius: 10px; --radius-sm: 8px;
   --font-body: "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, "Ubuntu", "Droid Sans", sans-serif;
   --font-mono: "Cascadia Code", Consolas, "SF Mono", "Ubuntu Mono", monospace;
-  --sidebar-width: 280px;
+  --sidebar-width: 288px;
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --shadow-1: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(2,8,30,.45);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
-  font-family: var(--font-body);
-  background: var(--bg); color: var(--text); display: flex; overflow: hidden;
+  font-family: var(--font-body); color: var(--text); display: flex; overflow: hidden;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(37,99,235,.20), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(56,189,248,.10), transparent 60%),
+    linear-gradient(180deg, #050b1c 0%, #071230 100%);
 }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip-link {
+  position: absolute; left: 12px; top: -48px; z-index: 100; padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--accent); color: #fff; font-weight: 600; text-decoration: none;
+}
+.skip-link:focus { top: 12px; outline: 2px solid var(--ring); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
 /* ---------- sidebar ---------- */
 #sidebar {
-  width: var(--sidebar-width); min-width: var(--sidebar-width); background: var(--bg2); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; height: 100vh;
+  width: var(--sidebar-width); min-width: var(--sidebar-width); height: 100vh; display: flex; flex-direction: column;
+  background: linear-gradient(180deg, rgba(11,22,49,.96), rgba(7,16,40,.96)); border-right: 1px solid var(--border);
+  box-shadow: 4px 0 24px rgba(0,0,0,.25); z-index: 20;
 }
-#sidebar header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-#sidebar header img { flex-shrink: 0; }
-#sidebar header h1 { font-size: 16px; letter-spacing: .5px; }
+#sidebar header { padding: 18px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+#sidebar header img { flex-shrink: 0; box-shadow: 0 0 0 1px var(--border-strong), 0 4px 14px var(--glow); }
+#sidebar header h1 { font-size: 17px; letter-spacing: .6px; font-weight: 700;
+  background: linear-gradient(90deg, #ffffff, #9cc3ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
 #sidebar header .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
-#engagements { flex: 1; overflow-y: auto; padding: 8px; }
-.eng-item {
-  padding: 10px 12px; border-radius: 8px; cursor: pointer; margin-bottom: 4px;
-  border: 1px solid transparent; position: relative;
+#sidebar .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 14px 16px 4px; }
+#engagements { flex: 1; overflow-y: auto; padding: 6px 10px 10px; list-style: none; }
+.eng-item { position: relative; margin-bottom: 6px; }
+.eng-item .eng-select {
+  display: block; width: 100%; text-align: left; padding: 11px 40px 11px 12px; border-radius: var(--radius);
+  background: transparent; border: 1px solid transparent; color: var(--text);
 }
-.eng-item:hover { background: var(--bg3); }
-.eng-item.active { background: var(--bg3); border-color: var(--accent2); }
-.eng-item:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+.eng-item .eng-select:hover { background: var(--bg3); border-color: var(--border); }
+.eng-item .eng-select[aria-current="true"] {
+  background: linear-gradient(135deg, rgba(37,99,235,.28), rgba(18,34,74,.9)); border-color: var(--accent-hi);
+  box-shadow: inset 3px 0 0 var(--accent-hi);
+}
+.eng-item .name { display: block; font-weight: 600; font-size: 14px; }
+.eng-item .client { display: block; color: var(--muted); font-size: 12px; }
+.eng-item .meta { display: flex; color: var(--muted); font-size: 12px; margin-top: 5px; gap: 8px; }
 .eng-item .del-btn {
-  position: absolute; top: 6px; right: 6px; width: 24px; height: 24px;
-  border-radius: 6px; border: 1px solid var(--border); background: var(--bg3);
-  color: var(--muted); font-size: 14px; line-height: 1; display: flex;
-  align-items: center; justify-content: center; cursor: pointer; opacity: .55;
+  position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; padding: 0;
+  display: flex; align-items: center; justify-content: center; color: var(--muted); opacity: .7;
 }
-.eng-item:hover .del-btn, .eng-item:focus-within .del-btn, .eng-item .del-btn:focus { opacity: 1; }
-.eng-item .del-btn:hover { background: rgba(248,113,113,.08); border-color: var(--err); color: var(--err); }
-.eng-item .name { font-weight: 600; font-size: 14px; padding-right: 30px; }
-.eng-item .client { color: var(--muted); font-size: 12px; padding-right: 30px; }
-.eng-item .meta { color: var(--muted); font-size: 12px; margin-top: 4px; display: flex; gap: 8px; }
-.badge { font-size: 12px; padding: 1px 6px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+.eng-item:hover .del-btn, .eng-item:focus-within .del-btn { opacity: 1; }
+.badge { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: rgba(5,11,28,.6); border: 1px solid var(--border); }
 .badge.closed { color: var(--muted); }
-.badge.active { color: var(--ok); }
+.badge.active { color: var(--ok); border-color: rgba(52,211,153,.45); }
 #sidebar footer { padding: 12px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
+.empty-list { color: var(--muted); font-size: 13px; padding: 12px; line-height: 1.5; }
+
+/* ---------- buttons: one system, animated hover for every button ---------- */
 button {
-  background: var(--bg3); color: var(--text); border: 1px solid var(--border);
-  border-radius: 6px; padding: 9px 12px; cursor: pointer; font-size: 13px;
+  position: relative; overflow: hidden; isolation: isolate;
+  font: inherit; font-size: 13px; color: var(--text); cursor: pointer;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 13px;
 }
-button:hover { border-color: var(--accent2); }
-button.primary { background: var(--accent2); border-color: var(--accent2); color: #fff; font-weight: 600; }
+button::after { /* light sweep on hover */
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+  background: linear-gradient(110deg, transparent 20%, rgba(156,195,255,.22) 50%, transparent 80%);
+  transform: translateX(-120%);
+}
+button:hover:not(:disabled):not([aria-disabled="true"]) {
+  border-color: var(--accent-hi); background: var(--bg4);
+  box-shadow: 0 0 0 1px rgba(59,130,246,.25), 0 6px 18px rgba(37,99,235,.30);
+}
+button:active:not(:disabled) { box-shadow: none; }
+button.primary {
+  background: linear-gradient(135deg, var(--accent), #1d4ed8 60%, #1e40af); border-color: var(--accent-hi);
+  color: #fff; font-weight: 600; box-shadow: 0 4px 14px rgba(37,99,235,.35);
+}
+button.primary:hover:not(:disabled) { background: linear-gradient(135deg, var(--accent), var(--accent) 45%, #1d4ed8); border-color: #93c5fd; box-shadow: 0 0 0 1px rgba(147,197,253,.5), 0 8px 26px var(--glow); }
 button.danger { color: var(--err); }
-button.danger:hover { background: rgba(248,113,113,.08); border-color: var(--err); }
-button:disabled { opacity: .5; cursor: not-allowed; }
-button:focus-visible, .eng-item:focus-visible, #input:focus-visible, select:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+button.danger:hover:not(:disabled), .eng-item .del-btn:hover { color: #fecaca; border-color: var(--err); background: rgba(248,113,113,.14); box-shadow: 0 6px 18px rgba(248,113,113,.22); }
+button.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+button.ghost:hover:not(:disabled) { color: var(--text); }
+button:disabled, button[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+@media (prefers-reduced-motion: no-preference) {
+  button { transition: transform .18s var(--ease), box-shadow .22s var(--ease), background-color .22s var(--ease), border-color .22s var(--ease), color .18s var(--ease); }
+  button::after { transition: transform .6s var(--ease), opacity .3s var(--ease); }
+  button:hover:not(:disabled):not([aria-disabled="true"]) { transform: translateY(-2px); }
+  button:hover:not(:disabled):not([aria-disabled="true"])::after { transform: translateX(120%); opacity: 1; }
+  button:active:not(:disabled) { transform: translateY(0) scale(.97); transition-duration: .06s; }
+  .icon-btn:hover:not(:disabled) svg { transform: scale(1.12); }
+  .icon-btn svg { transition: transform .2s var(--ease); }
+}
+
 /* ---------- main ---------- */
 #main { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; }
 #topbar {
-  padding: 10px var(--space-4); border-bottom: 1px solid var(--border); background: var(--bg2);
-  display: flex; align-items: center; gap: 12px; font-size: 13px;
+  padding: 10px var(--space-4); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; font-size: 13px;
+  background: rgba(11,22,49,.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
-#topbar .eng-title { font-weight: 600; }
+#topbar .eng-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #topbar .spacer { flex: 1; }
+#menu-btn { display: none; }
 #model-btn { font-size: 12px; }
-#status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); display: inline-block; }
-#status-dot.ok { background: var(--ok); } #status-dot.err { background: var(--err); }
-#chat { flex: 1; overflow-y: auto; padding: var(--space-5); }
-#chat-inner { max-width: 860px; margin: 0 auto; }
+#status-wrap { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+#status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--warn); display: inline-block; box-shadow: 0 0 0 3px rgba(251,191,36,.15); }
+#status-dot.ok { background: var(--ok); box-shadow: 0 0 0 3px rgba(52,211,153,.15); }
+#status-dot.err { background: var(--err); box-shadow: 0 0 0 3px rgba(248,113,113,.15); }
+#chat { flex: 1; overflow-y: auto; padding: var(--space-5); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { #chat { scroll-behavior: auto; } }
+#chat.drag-over { outline: 2px dashed var(--accent-hi); outline-offset: -12px; background: rgba(37,99,235,.06); }
+#chat-inner { max-width: 880px; margin: 0 auto; }
 .msg { margin-bottom: var(--space-5); }
-.msg .who { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-.msg.user .bubble { background: rgba(91,143,196,.06); border: none; border-left: 2px solid var(--accent2); color: #b8c2cc; }
-.msg.assistant .bubble { background: var(--bg2); border: 1px solid var(--border); }
-.bubble { border-radius: 8px; padding: 12px 16px; line-height: 1.6; font-size: 15px; word-wrap: break-word; word-break: break-word; }
-.bubble pre { background: #0b0f14; border: 1px solid var(--border); border-radius: 6px; padding: 10px; overflow-x: auto; margin: 8px 0; font-size: 13px; font-family: var(--font-mono); }
-.mermaid-block { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 10px 0; overflow-x: auto; }
+.msg .who { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 6px; }
+.msg .who .msg-actions { margin-left: auto; display: flex; gap: 6px; opacity: 0; }
+.msg:hover .msg-actions, .msg:focus-within .msg-actions { opacity: 1; }
+.msg-actions button { font-size: 11px; padding: 3px 9px; text-transform: none; letter-spacing: 0; }
+.msg.user .bubble { background: linear-gradient(135deg, rgba(37,99,235,.22), rgba(37,99,235,.08)); border: 1px solid rgba(59,130,246,.35); color: var(--text); }
+.msg.assistant .bubble { background: rgba(11,22,49,.85); border: 1px solid var(--border); box-shadow: var(--shadow-1); }
+.bubble { border-radius: 12px; padding: 13px 17px; line-height: 1.65; font-size: 15px; word-wrap: break-word; word-break: break-word; }
+.bubble pre { background: #030817; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; overflow-x: auto; margin: 8px 0; font-size: 13px; font-family: var(--font-mono); }
+.mermaid-block { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin: 10px 0; overflow-x: auto; }
 .mermaid-block svg { max-width: 100%; height: auto; }
-.mermaid-invalid { opacity: .7; }
-.mermaid-invalid .mermaid-src { display: block; font-family: Consolas, monospace; font-size: 12px; white-space: pre-wrap; margin-top: 8px; }
+.mermaid-invalid { opacity: .75; }
+.mermaid-invalid .mermaid-src { display: block; font-family: var(--font-mono); font-size: 12px; white-space: pre-wrap; margin-top: 8px; }
 .mermaid-invalid .mermaid-notice { font-size: 11px; color: var(--muted); margin-top: 6px; }
-.bubble code { font-family: var(--font-mono); font-size: .88em; background: rgba(91,143,196,.12); border: 1px solid rgba(91,143,196,.18); padding: 1px 5px; border-radius: 4px; }
+.bubble code { font-family: var(--font-mono); font-size: .88em; background: rgba(59,130,246,.14); border: 1px solid rgba(59,130,246,.25); padding: 1px 5px; border-radius: 4px; }
 .bubble pre code { background: none; border: none; padding: 0; font-size: 13px; }
 .bubble table { border-collapse: collapse; margin: 10px 0; width: 100%; font-size: 13px; }
-.bubble th, .bubble td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+.bubble th, .bubble td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; }
 .bubble th { background: var(--bg3); }
-.bubble tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
-.bubble tbody tr:hover { background: rgba(91,143,196,.06); }
-.bubble a { color: var(--accent); }
-.bubble blockquote { border-left: 3px solid var(--accent2); padding-left: 10px; color: var(--muted); margin: 8px 0; }
-/* markdown polish */
+.bubble tbody tr:nth-child(even) { background: rgba(255,255,255,.025); }
+.bubble tbody tr:hover { background: rgba(59,130,246,.08); }
+.bubble a { color: var(--accent-ink); text-underline-offset: 2px; }
+.bubble blockquote { border-left: 3px solid var(--accent-hi); padding-left: 10px; color: var(--muted); margin: 8px 0; }
 .bubble p { margin: 8px 0; }
 .bubble h1, .bubble h2, .bubble h3, .bubble h4, .bubble h5, .bubble h6 { color: var(--text); font-weight: 600; line-height: 1.3; margin: 18px 0 8px; }
 .bubble h1 { font-size: 1.45em; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
@@ -108,104 +166,147 @@ button:focus-visible, .eng-item:focus-visible, #input:focus-visible, select:focu
 .bubble h5, .bubble h6 { font-size: .95em; color: var(--muted); }
 .bubble ul, .bubble ol { margin: 8px 0; padding-left: 22px; }
 .bubble li { margin: 4px 0; }
-.bubble li::marker { color: var(--accent); font-weight: 600; }
+.bubble li::marker { color: var(--accent-ink); font-weight: 600; }
 .bubble li > ul, .bubble li > ol { margin: 4px 0; }
 .bubble hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 .bubble strong { color: #fff; }
 .bubble em { color: var(--muted); }
 .bubble > :first-child { margin-top: 0; }
 .bubble > :last-child { margin-bottom: 0; }
-.sev-critical { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid currentColor; color: var(--crit); background: rgba(196,58,69,.14); vertical-align: text-bottom; }
-.sev-high { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid currentColor; color: var(--high); background: rgba(217,107,41,.14); vertical-align: text-bottom; }
-.sev-medium { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid currentColor; color: var(--med); background: rgba(201,162,39,.14); vertical-align: text-bottom; }
-.sev-low { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid currentColor; color: var(--low); background: rgba(91,143,196,.14); vertical-align: text-bottom; }
-.sev-informational { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid currentColor; color: var(--info); background: rgba(107,122,143,.25); vertical-align: text-bottom; }
-#empty { text-align: center; margin-top: 12vh; color: var(--muted); }
-#empty h2 { color: var(--text); margin-bottom: 8px; }
-#empty .suggestions { display: grid; gap: 8px; max-width: 560px; margin: 20px auto 0; }
-#empty .suggestions button { text-align: left; }
-#empty .suggestions button:hover { border-color: var(--accent2); background: var(--bg3); }
-#empty .hint { margin-top: 8px; color: var(--muted); font-size: 13px; }
-/* ---------- composer ---------- */
-#composer-wrap { border-top: 1px solid var(--border); background: var(--bg2); padding: var(--space-3) var(--space-5); }
-#composer { max-width: 860px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; }
-#input {
-  flex: 1; background: var(--bg3); border: 1px solid var(--border); color: var(--text);
-  border-radius: 6px; padding: 12px 14px; font-size: 15px; font-family: inherit; resize: none;
-  min-height: 52px; max-height: 180px; outline: none;
+.sev-critical, .sev-high, .sev-medium, .sev-low, .sev-informational {
+  display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  border: 1px solid currentColor; vertical-align: text-bottom;
 }
-#input:focus { border-color: var(--accent2); }
-.icon-btn { padding: 11px 13px; font-size: 16px; line-height: 1; border-radius: 6px; }
-#role-select { background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 9px 11px; font-size: 13px; cursor: pointer; outline: none; }
-#role-select:focus { border-color: var(--accent2); }
-#status-line { max-width: 860px; margin: 6px auto 0; font-size: 12px; color: var(--muted); min-height: 16px; }
-#status-line[aria-live] { }
+.sev-critical { color: var(--crit); background: rgba(248,113,113,.14); }
+.sev-high { color: var(--high); background: rgba(251,146,60,.14); }
+.sev-medium { color: var(--med); background: rgba(250,204,21,.12); }
+.sev-low { color: var(--low); background: rgba(127,176,255,.14); }
+.sev-informational { color: var(--info); background: rgba(163,179,212,.16); }
+#empty { text-align: center; margin-top: 10vh; color: var(--muted); }
+#empty img { box-shadow: 0 0 0 1px var(--border-strong), 0 10px 40px var(--glow) !important; }
+#empty h2 { color: var(--text); margin-bottom: 8px; font-size: 26px; letter-spacing: .4px; }
+#empty .suggestions { display: grid; gap: 10px; max-width: 580px; margin: 22px auto 0; }
+#empty .suggestions button { text-align: left; padding: 13px 16px; border-radius: var(--radius); background: rgba(18,34,74,.7); font-size: 14px; }
+#empty .hint { margin-top: 12px; color: var(--muted); font-size: 13px; }
+
+/* ---------- composer ---------- */
+#composer-wrap { border-top: 1px solid var(--border); padding: var(--space-3) var(--space-5); background: rgba(11,22,49,.78); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+#composer { max-width: 880px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; }
+#input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius);
+  padding: 13px 15px; font-size: 15px; font-family: inherit; resize: none; min-height: 52px; max-height: 180px;
+}
+#input::placeholder { color: var(--muted); }
+#input:focus-visible { outline: none; border-color: var(--accent-hi); box-shadow: 0 0 0 3px rgba(59,130,246,.35); }
+#input:disabled { opacity: .55; cursor: not-allowed; }
+.icon-btn { padding: 12px 14px; font-size: 16px; line-height: 1; border-radius: var(--radius); }
+#role-select { background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); padding: 11px 11px; font-size: 13px; cursor: pointer; }
+#role-select:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+#status-line { max-width: 880px; margin: 6px auto 0; font-size: 12px; color: var(--muted); min-height: 16px; }
+#status-line.is-error { color: var(--err); }
+.kbd-hint { max-width: 880px; margin: 2px auto 0; font-size: 11px; color: var(--muted); opacity: .85; }
+kbd { font-family: var(--font-mono); font-size: 10.5px; padding: 0 5px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--bg3); }
+
 /* ---------- dialogs ---------- */
 dialog {
-  background: var(--bg2); color: var(--text); border: 1px solid var(--border);
-  border-radius: 12px; padding: 28px; width: 480px; max-width: 92vw;
+  background: linear-gradient(180deg, var(--bg2), #08122a); color: var(--text); border: 1px solid var(--border-strong);
+  border-radius: 14px; padding: 28px; width: 500px; max-width: 92vw; box-shadow: 0 24px 64px rgba(0,0,0,.6), 0 0 0 1px rgba(59,130,246,.15);
 }
-dialog::backdrop { background: rgba(0,0,0,.6); }
+dialog::backdrop { background: rgba(2,6,20,.7); backdrop-filter: blur(3px); }
+@media (prefers-reduced-motion: no-preference) {
+  dialog[open] { animation: dlg-in .22s var(--ease); }
+  @keyframes dlg-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+}
 dialog h3 { margin-bottom: 14px; font-size: 18px; font-weight: 600; }
-dialog label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 4px; }
+.dlg-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.dlg-head h3 { margin: 0; }
+dialog label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 12px 0 4px; }
+dialog label .req { color: var(--err); }
 dialog input, dialog select {
-  width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text);
-  border-radius: 6px; padding: 9px 11px; font-size: 14px;
+  width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 14px; font-family: inherit;
 }
+dialog input:focus-visible { outline: none; border-color: var(--accent-hi); box-shadow: 0 0 0 3px rgba(59,130,246,.35); }
+dialog input[aria-invalid="true"] { border-color: var(--err); }
+.field-error { color: var(--err); font-size: 12px; margin-top: 4px; min-height: 0; }
 dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
-.dlg-close { padding: 4px 6px; line-height: 1; background: transparent; border: none; color: var(--muted); cursor: pointer; border-radius: 6px; }
-.dlg-close:hover { color: var(--text); }
-.tier-opt { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; cursor: pointer; }
-.tier-opt:hover { border-color: var(--accent2); }
-.tier-opt.selected { border-color: var(--accent2); background: var(--bg3); }
-.tier-opt.disabled { opacity: .45; cursor: not-allowed; }
+.dlg-close { padding: 6px; line-height: 1; background: transparent; border-color: transparent; color: var(--muted); }
+.tier-group { font-size: 11px; color: var(--muted); font-weight: 700; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .8px; }
+.tier-opt { display: flex; width: 100%; text-align: left; align-items: center; gap: 10px; padding: 11px 13px; margin-bottom: 8px; border-radius: var(--radius-sm); background: rgba(18,34,74,.55); }
+.tier-opt[aria-pressed="true"] { border-color: var(--accent-hi); background: var(--bg3); }
 .tier-opt .t-name { font-weight: 600; font-size: 14px; }
 .tier-opt .t-desc { color: var(--muted); font-size: 12px; }
 .tier-opt .t-size { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
 #dl-progress { height: 6px; background: var(--bg3); border-radius: 4px; overflow: hidden; margin-top: 10px; display: none; }
-#dl-progress[role="progressbar"] { }
-#dl-progress > div { height: 100%; background: var(--accent2); width: 0%; }
-@media (prefers-reduced-motion: no-preference) {
-  #dl-progress > div { transition: width .3s; }
-}
+#dl-progress > div { height: 100%; background: linear-gradient(90deg, var(--accent), #38bdf8); width: 0%; }
 #dl-status { font-size: 12px; color: var(--muted); margin-top: 6px; display: none; }
-/* ---------- report generation progress ---------- */
-#report-progress { max-width: 860px; margin: 10px auto 0; display: none; }
+#report-progress { max-width: 880px; margin: 10px auto 0; display: none; }
 #report-progress .rp-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
 #report-progress-bar { height: 6px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
-#report-progress-bar > div { height: 100%; background: var(--accent2); width: 0%; }
+#report-progress-bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), #38bdf8); width: 0%; }
 #report-progress-bar.indeterminate > div { width: 34%; }
 #report-progress-detail { font-size: 12px; color: var(--muted); margin-top: 6px; }
 @media (prefers-reduced-motion: no-preference) {
-  #report-progress-bar > div { transition: width .3s; }
+  #dl-progress > div, #report-progress-bar > div { transition: width .3s; }
   #report-progress-bar.indeterminate > div { animation: rp-indeterminate 1.4s ease-in-out infinite; }
+  .msg { animation: msg-in .25s var(--ease); }
+  @keyframes msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .msg .who .msg-actions { transition: opacity .2s; }
 }
-@media (prefers-reduced-motion: reduce) {
-  #report-progress-bar.indeterminate > div { width: 100%; }
-}
+@media (prefers-reduced-motion: reduce) { #report-progress-bar.indeterminate > div { width: 100%; } }
 @keyframes rp-indeterminate { 0% { margin-left: -34%; } 100% { margin-left: 100%; } }
-.tag { display:inline-flex; align-items: center; font-size:11px; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align: middle; font-weight: 600; }
-.tag.rec { background: var(--accent2); color: #fff; border: 1px solid var(--accent2); }
-.tag.on { background: rgba(47,184,146,.12); color: var(--ok); border: 1px solid var(--ok); position: relative; padding-left: 18px; }
-.tag.on::before { content:''; width:6px; height:6px; border-radius:50%; background: var(--ok); position: absolute; left: 6px; top: 50%; transform: translateY(-50%); }
-@media (prefers-reduced-motion: no-preference) {
-  .tag.on::before { animation: pulse 2s infinite; }
-}
+.tag { display: inline-flex; align-items: center; font-size: 11px; padding: 2px 7px; border-radius: 999px; margin-left: 6px; vertical-align: middle; font-weight: 600; }
+.tag.rec { background: var(--accent); color: #fff; border: 1px solid var(--accent-hi); }
+.tag.on { background: rgba(52,211,153,.12); color: var(--ok); border: 1px solid var(--ok); position: relative; padding-left: 18px; }
+.tag.on::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); position: absolute; left: 6px; top: 50%; transform: translateY(-50%); }
+@media (prefers-reduced-motion: no-preference) { .tag.on::before { animation: pulse 2s infinite; } }
 @keyframes pulse { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- narrow windows: sidebar becomes a drawer ---------- */
+#topbar > button { flex-shrink: 0; white-space: nowrap; }
+#topbar .eng-title { flex: 1 1 auto; min-width: 0; }
+@media (max-width: 760px) {
+  #menu-btn { display: inline-flex; }
+  #topbar { gap: 8px; padding: 8px 10px; }
+  #topbar .spacer { display: none; }
+  #status-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  #topbar > button:not(.icon-btn) { padding: 8px 10px; }
+  #sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); visibility: hidden;
+    background: #0b1631; box-shadow: 12px 0 40px rgba(0,0,0,.6); }
+  body.nav-open #sidebar { transform: none; visibility: visible; }
+  body.nav-open::after { content: ""; position: fixed; inset: 0; z-index: 15; background: rgba(2,6,20,.65); backdrop-filter: blur(2px); }
+  #chat { padding: var(--space-4); }
+  #composer-wrap { padding: var(--space-3); }
+  #role-select { max-width: 96px; }
+  .kbd-hint { display: none; }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+  #sidebar { transition: transform .25s var(--ease), visibility .25s; }
+}
+/* Windows high-contrast / forced colours: keep buttons and focus visible */
+@media (forced-colors: active) {
+  button, .eng-item .eng-select { border: 1px solid ButtonText; }
+  :focus-visible { outline: 2px solid Highlight; }
+  #status-dot { forced-color-adjust: none; }
+}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#input">Skip to message box</a>
 
-<nav id="sidebar">
+<nav id="sidebar" aria-label="Engagements">
   <header>
-    <img src="/ui/logo.png" alt="Fortis" width="34" height="34" style="height:34px;width:34px;border-radius:7px">
-    <h1>Fortis</h1>
-    <div class="sub">Cybersecurity Advisor · local</div>
+    <img src="/ui/logo.png" alt="" width="34" height="34" style="height:34px;width:34px;border-radius:8px">
+    <div>
+      <h1>Fortis</h1>
+      <div class="sub">Cybersecurity Advisor · local</div>
+    </div>
   </header>
-  <div id="engagements"></div>
+  <div class="section-label" id="eng-list-label">Engagements</div>
+  <ul id="engagements" aria-labelledby="eng-list-label"></ul>
   <footer>
     <button id="btn-new-eng" class="primary">+ New engagement</button>
     <button id="btn-close-eng">Close active engagement</button>
@@ -215,105 +316,98 @@ dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18
 
 <main id="main">
   <div id="topbar">
-    <span id="status-dot"></span>
-    <span class="eng-title" id="eng-title">No engagement selected</span>
+    <button id="menu-btn" class="icon-btn ghost" aria-label="Show engagements" aria-controls="sidebar" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <span id="status-wrap" role="status"><span id="status-dot" aria-hidden="true"></span><span id="status-text">Checking model…</span></span>
+    <h2 class="eng-title" id="eng-title" style="font-size:14px">No engagement selected</h2>
     <span class="spacer"></span>
     <button id="clear-chat-btn" title="Delete the saved chat history for this engagement" style="display:none">Clear chat</button>
-    <button id="model-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010-2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Model</button>
+    <button id="model-btn"><svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010-2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Model</button>
   </div>
-  <div id="chat"><div id="chat-inner">
-    <div id="empty">
-      <img src="/ui/logo.png" alt="Fortis" width="110" height="110" style="width:110px;height:110px;border-radius:16px;margin-bottom:14px;box-shadow:0 4px 24px rgba(0,0,0,.35)">
-      <h2>Fortis</h2>
-      <p>Your local AI cybersecurity consultant. Everything stays on this machine.</p>
-      <div class="suggestions">
-        <button data-q="What are the OWASP Top 10 risks I should check first in a new web application?">Explain the OWASP Top 10 for a new web app</button>
-        <button data-q="Compare NIST CSF 2.0 functions with CIS Controls v8.1 in a table.">NIST CSF vs CIS Controls (table)</button>
-        <button data-q="Upload a config file, then ask me to review it. Tip: use the attach button.">Attach a config or policy file, then ask for review</button>
-      </div>
-      <p class="hint">Create an engagement in the sidebar first — documents and reports are scoped to it.</p>
-    </div>
-  </div></div>
+  <div id="chat" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions"><div id="chat-inner"></div></div>
   <div id="composer-wrap">
-    <div id="composer">
-      <button id="btn-attach" class="icon-btn" title="Attach file for review" aria-label="Attach file for review">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+    <form id="composer" onsubmit="event.preventDefault(); send();">
+      <button type="button" id="btn-attach" class="icon-btn" title="Attach file for review (or drop files on the chat)" aria-label="Attach file for review">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
       </button>
+      <label for="role-select" class="sr-only">Analyst mode</label>
       <select id="role-select" title="Analyst mode — shapes Fortis's answer style">
         <option value="general">General</option>
         <option value="grc">GRC</option>
         <option value="code">Code</option>
-        <option value="osint">OSINT / CTI</option>
+        <option value="osint">OSINT</option>
+        <option value="cti">CTI (ATT&amp;CK)</option>
       </select>
-      <textarea id="input" placeholder="Ask Fortis… (Enter to send, Shift+Enter for newline)"></textarea>
-      <button id="btn-send" class="primary icon-btn" title="Send" aria-label="Send message">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:-2px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      <label for="input" class="sr-only">Message to Fortis</label>
+      <textarea id="input" rows="1" aria-describedby="kbd-hint" placeholder="Ask Fortis…"></textarea>
+      <button type="submit" id="btn-send" class="primary icon-btn" title="Send (Enter)" aria-label="Send message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
-    </div>
+    </form>
     <div id="report-progress" role="status" aria-live="polite">
       <div class="rp-row"><span id="report-progress-stage"></span><span id="report-progress-count"></span></div>
-      <div id="report-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div></div></div>
+      <div id="report-progress-bar" role="progressbar" aria-label="Report generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div></div></div>
       <div id="report-progress-detail"></div>
     </div>
-    <div id="status-line" aria-live="polite"></div>
+    <div id="status-line" role="status" aria-live="polite"></div>
+    <div id="kbd-hint" class="kbd-hint"><kbd>Enter</kbd> send · <kbd>Shift</kbd>+<kbd>Enter</kbd> new line · <kbd>/</kbd> focus · <kbd>/report pdf</kbd> export</div>
   </div>
 </main>
 
 <!-- new engagement dialog -->
-<dialog id="dlg-new-eng">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-    <h3 style="margin:0">New engagement</h3>
-    <button class="dlg-close" aria-label="Close dialog">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-  </div>
-  <label>Client name</label>
-  <input id="ne-client" placeholder="e.g. Acme Corp">
-  <label>Engagement name</label>
-  <input id="ne-name" placeholder="e.g. Q3 firewall config review">
-  <label>Notes (optional)</label>
-  <input id="ne-notes" placeholder="Scope, context…">
-  <div class="row">
-    <button onclick="dlgNewEng.close()">Cancel</button>
-    <button id="ne-create" class="primary">Create</button>
-  </div>
+<dialog id="dlg-new-eng" aria-labelledby="dlg-new-eng-title">
+  <form method="dialog" id="ne-form" novalidate>
+    <div class="dlg-head">
+      <h3 id="dlg-new-eng-title">New engagement</h3>
+      <button type="button" class="dlg-close" aria-label="Close dialog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <label for="ne-client">Client name <span class="req" aria-hidden="true">*</span></label>
+    <input id="ne-client" placeholder="e.g. Acme Corp" required aria-required="true" aria-describedby="ne-client-err" autocomplete="off">
+    <div id="ne-client-err" class="field-error"></div>
+    <label for="ne-name">Engagement name <span class="req" aria-hidden="true">*</span></label>
+    <input id="ne-name" placeholder="e.g. Q3 firewall config review" required aria-required="true" aria-describedby="ne-name-err" autocomplete="off">
+    <div id="ne-name-err" class="field-error"></div>
+    <label for="ne-notes">Notes (optional)</label>
+    <input id="ne-notes" placeholder="Scope, context…" autocomplete="off">
+    <div class="row">
+      <button type="button" onclick="dlgNewEng.close()">Cancel</button>
+      <button type="submit" id="ne-create" class="primary">Create</button>
+    </div>
+  </form>
 </dialog>
 
 <!-- model dialog -->
-<dialog id="dlg-model">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-    <h3 style="margin:0">Model</h3>
-    <button class="dlg-close" aria-label="Close dialog">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
+<dialog id="dlg-model" aria-labelledby="dlg-model-title">
+  <div class="dlg-head">
+    <h3 id="dlg-model-title">Model</h3>
+    <button type="button" class="dlg-close" aria-label="Close dialog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   </div>
   <div id="hw-line" style="color:var(--muted);font-size:12px;margin-bottom:12px"></div>
   <div id="hw-status-line" style="color:var(--muted);font-size:12px;margin:-4px 0 12px;display:none"></div>
   <div id="tier-list"></div>
-  <div id="dl-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div></div></div>
-  <div id="dl-status"></div>
+  <div id="dl-progress" role="progressbar" aria-label="Model download progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div></div></div>
+  <div id="dl-status" role="status" aria-live="polite"></div>
   <div class="row">
-    <button onclick="dlgModel.close()">Close</button>
+    <button type="button" onclick="dlgModel.close()">Close</button>
   </div>
 </dialog>
 
 <!-- delete engagement dialog -->
-<dialog id="dlg-del-eng">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-    <h3 style="margin:0">Delete engagement</h3>
-    <button class="dlg-close" aria-label="Close dialog">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
+<dialog id="dlg-del-eng" aria-labelledby="dlg-del-eng-title" aria-describedby="del-eng-info del-eng-warn">
+  <div class="dlg-head">
+    <h3 id="dlg-del-eng-title">Delete engagement</h3>
+    <button type="button" class="dlg-close" aria-label="Close dialog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   </div>
   <p id="del-eng-info" style="margin-bottom:12px;font-size:14px"></p>
-  <p style="color:var(--muted);font-size:13px;margin-bottom:18px">This permanently deletes the engagement, its indexed documents and chunks. This cannot be undone.</p>
+  <p id="del-eng-warn" style="color:var(--muted);font-size:13px;margin-bottom:18px">This permanently deletes the engagement, its indexed documents and chunks. This cannot be undone.</p>
   <div class="row">
-    <button onclick="dlgDelEng.close()">Cancel</button>
-    <button id="del-eng-confirm" class="danger">Delete</button>
+    <button type="button" id="del-eng-cancel" onclick="dlgDelEng.close()">Cancel</button>
+    <button type="button" id="del-eng-confirm" class="danger">Delete</button>
   </div>
 </dialog>
 
-<input type="file" id="file-input" multiple style="display:none">
+<input type="file" id="file-input" multiple hidden>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -462,6 +556,7 @@ async function loadEngagements() {
     } catch { activeId = null; }
     renderEngagements();
     updateComposerState();
+    await refreshFiles();  // the title read "No engagement selected" on load even with one active
     await restoreChatHistory();
   } catch (e) { status('Failed to load engagements: ' + e.message, true); }
 }
@@ -470,25 +565,25 @@ function renderEngagements() {
   const box = $('engagements');
   box.innerHTML = '';
   if (!engagements.length) {
-    box.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px">No engagements yet.<br>Click <b>+ New engagement</b> to start.</div>';
+    box.innerHTML = '<li class="empty-list">No engagements yet.<br>Choose <b>+ New engagement</b> to start.</li>';
     return;
   }
+  // A list of sibling buttons (select + delete) instead of a role="button"
+  // div wrapping another button, which screen readers cannot reach properly.
   for (const e of engagements) {
-    const div = document.createElement('div');
-    div.className = 'eng-item' + (e.id === activeId ? ' active' : '');
-    div.tabIndex = 0;
-    div.role = 'button';
-    div.setAttribute('aria-pressed', e.id === activeId ? 'true' : 'false');
-    div.innerHTML = `
-      <div class="client">${esc(e.client_name)}</div>
-      <div class="name">${esc(e.name)}</div>
-      <div class="meta"><span class="badge ${e.status}">${e.status}</span></div>
-      <button class="del-btn" aria-label="Delete engagement"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`;
-    div.onclick = () => activateEngagement(e.id);
-    div.onkeydown = (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); activateEngagement(e.id); } };
-    const delBtn = div.querySelector('.del-btn');
-    delBtn.onclick = (ev) => { ev.stopPropagation(); confirmDeleteEngagement(e); };
-    box.appendChild(div);
+    const li = document.createElement('li');
+    li.className = 'eng-item';
+    const isActive = e.id === activeId;
+    li.innerHTML = `
+      <button type="button" class="eng-select" ${isActive ? 'aria-current="true"' : ''}>
+        <span class="client">${esc(e.client_name)}</span>
+        <span class="name">${esc(e.name)}</span>
+        <span class="meta"><span class="badge ${esc(e.status)}">${esc(e.status)}</span>${isActive ? '<span class="sr-only">(active)</span>' : ''}</span>
+      </button>
+      <button type="button" class="del-btn" aria-label="Delete engagement ${esc(e.client_name)} — ${esc(e.name)}" title="Delete engagement"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" focusable="false"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`;
+    li.querySelector('.eng-select').onclick = () => { activateEngagement(e.id); closeNav(); };
+    li.querySelector('.del-btn').onclick = () => confirmDeleteEngagement(e);
+    box.appendChild(li);
   }
 }
 
@@ -496,18 +591,25 @@ function restoreEmptyState() {
   const inner = $('chat-inner');
   inner.innerHTML = `
     <div id="empty">
-      <img src="/ui/logo.png" alt="Fortis" width="110" height="110" style="width:110px;height:110px;border-radius:16px;margin-bottom:14px;box-shadow:0 4px 24px rgba(0,0,0,.35)">
+      <img src="/ui/logo.png" alt="" width="110" height="110" style="width:110px;height:110px;border-radius:18px;margin-bottom:16px">
       <h2>Fortis</h2>
       <p>Your local AI cybersecurity consultant. Everything stays on this machine.</p>
       <div class="suggestions">
-        <button data-q="What are the OWASP Top 10 risks I should check first in a new web application?">Explain the OWASP Top 10 for a new web app</button>
-        <button data-q="Compare NIST CSF 2.0 functions with CIS Controls v8.1 in a table.">NIST CSF vs CIS Controls (table)</button>
-        <button data-q="Upload a config file, then ask me to review it. Tip: use the attach button.">Attach a config or policy file, then ask for review</button>
+        <button type="button" data-q="What are the OWASP Top 10 risks I should check first in a new web application?">Explain the OWASP Top 10 for a new web app</button>
+        <button type="button" data-q="Compare NIST CSF 2.0 functions with CIS Controls v8.1 in a table.">NIST CSF vs CIS Controls (table)</button>
+        <button type="button" data-action="attach">Attach a config, policy or threat report for review…</button>
+        <button type="button" data-action="prefill" data-q="/triage ">Triage a threat advisory: paste it after /triage (upload the asset inventory CSV first)</button>
       </div>
-      <p class="hint">Create an engagement in the sidebar first — documents and reports are scoped to it.</p>
+      <p class="hint">${activeId ? 'Tip: drop files anywhere on the conversation to attach them.' : 'Create an engagement in the sidebar first — documents and reports are scoped to it.'}</p>
     </div>`;
   document.querySelectorAll('#empty .suggestions button').forEach(b => {
-    b.onclick = () => { $('input').value = b.dataset.q; send(); };
+    // the attach suggestion used to send its own tip text to the model as a question
+    b.onclick = () => {
+      if (b.dataset.action === 'attach') { if (requireEngagement()) $('file-input').click(); return; }
+      // a slash command needs its argument (the advisory), so only prefill
+      if (b.dataset.action === 'prefill') { $('input').value = b.dataset.q; $('input').focus(); return; }
+      $('input').value = b.dataset.q; send();
+    };
   });
 }
 
@@ -553,10 +655,21 @@ async function refreshFiles() {
 }
 
 function updateComposerState() {
+  // a real disabled state: the old opacity/pointer-events trick still let
+  // keyboard users type into a box that could not send
+  const input = $('input');
+  input.disabled = !activeId;
+  input.placeholder = activeId ? 'Ask Fortis…' : 'Create or select an engagement to start';
   $('btn-send').disabled = busy || !activeId;
-  $('input').style.opacity = activeId ? '1' : '.5';
-  $('input').style.pointerEvents = activeId ? 'auto' : 'none';
+  $('btn-attach').disabled = !activeId;
+  $('chat').setAttribute('aria-busy', busy ? 'true' : 'false');
   $('clear-chat-btn').style.display = activeId ? '' : 'none';
+}
+
+function requireEngagement() {
+  if (activeId) return true;
+  status('Create an engagement first (sidebar → + New engagement).', true);
+  return false;
 }
 
 /* ---------- chat ---------- */
@@ -565,11 +678,24 @@ function addMsg(role, text, cls = '') {
   if (empty) empty.remove();
   const wrap = document.createElement('div');
   wrap.className = 'msg ' + role;
-  wrap.innerHTML = `<div class="who">${role === 'user' ? 'You' : 'Fortis'}</div>
+  wrap.innerHTML = `<div class="who"><span>${role === 'user' ? 'You' : 'Fortis'}</span>${
+    role === 'assistant' ? '<span class="msg-actions"><button type="button" class="ghost copy-btn">Copy</button></span>' : ''}</div>
     <div class="bubble ${cls}"></div>`;
   const bubbleEl = wrap.querySelector('.bubble');
+  bubbleEl.dataset.raw = text;
   bubbleEl.innerHTML = role === 'user' ? esc(text).replace(/\n/g, '<br>') : renderMd(text);
-  if (role === 'assistant') enhanceMermaid(bubbleEl);
+  if (role === 'assistant') {
+    enhanceMermaid(bubbleEl);
+    const copy = wrap.querySelector('.copy-btn');
+    copy.setAttribute('aria-label', 'Copy this reply as Markdown');
+    copy.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(bubbleEl.dataset.raw || bubbleEl.innerText);
+        copy.textContent = 'Copied ✓'; status('Reply copied to clipboard.');
+      } catch { copy.textContent = 'Copy failed'; }
+      setTimeout(() => { copy.textContent = 'Copy'; }, 1600);
+    };
+  }
   $('chat-inner').appendChild(wrap);
   $('chat').scrollTop = $('chat').scrollHeight;
   return wrap.querySelector('.bubble');
@@ -577,16 +703,14 @@ function addMsg(role, text, cls = '') {
 
 function status(msg, isErr = false) {
   const el = $('status-line');
-  el.textContent = msg || '';
-  el.style.color = isErr ? 'var(--err)' : 'var(--muted)';
+  // errors are marked in text too, not by colour alone (WCAG 1.4.1)
+  el.textContent = msg ? (isErr ? 'Error: ' + msg : msg) : '';
+  el.classList.toggle('is-error', !!(msg && isErr));
 }
 
 async function send() {
   if (busy) return;
-  if (!activeId) {
-    status('Create an engagement first (sidebar → + New engagement).', true);
-    return;
-  }
+  if (!requireEngagement()) return;
   const input = $('input');
   const text = input.value.trim();
   if (!text) return;
@@ -598,6 +722,7 @@ async function send() {
   if (text.startsWith('/')) {
     addMsg('user', text);
     if (looksLikeReportRequest(text)) startReportProgressPoll();
+    if (text.toLowerCase().startsWith('/triage')) status('Triage agent running: extract, enrich, infer, exposure, priority, brief, verify…');
     try {
       const r = await api('/api/command', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -606,6 +731,7 @@ async function send() {
       addMsg('assistant', r.text);
       await loadEngagements(); await refreshFiles();
     } catch (e) { addMsg('assistant', 'Error: ' + e.message); }
+    status('');
     busy = false;
     updateComposerState();
     return;
@@ -638,7 +764,7 @@ async function send() {
         if (nearBottom) chat.scrollTop = chat.scrollHeight;
       }
     }
-    if (bubble) { bubble.innerHTML = renderMd(acc); enhanceMermaid(bubble); }
+    if (bubble) { bubble.innerHTML = renderMd(acc); bubble.dataset.raw = acc; enhanceMermaid(bubble); }
     const nearBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 120;
     if (nearBottom) chat.scrollTop = chat.scrollHeight;
     history.push({ role: 'user', content: text });
@@ -658,20 +784,42 @@ async function send() {
         });
       });
     }
-    status('');
+    status('Fortis replied.');
   } catch (e) {
     if (bubble) { bubble.innerHTML = renderMd('⚠️ ' + (e.message || 'Request failed')); enhanceMermaid(bubble); }
-    status('Check that a model is loaded (open Model).', true);
+    status('Request failed — check that a model is loaded (open Model).', true);
   }
   busy = false;
   updateComposerState();
+  input.focus();
 }
 
 /* ---------- attachments ---------- */
-$('btn-attach').onclick = () => $('file-input').click();
+$('btn-attach').onclick = () => { if (requireEngagement()) $('file-input').click(); };
 $('file-input').onchange = async () => {
-  if (!activeId) { status('Create an engagement first.', true); return; }
-  for (const file of $('file-input').files) {
+  await uploadFiles($('file-input').files);
+  $('file-input').value = '';
+};
+
+// drag-and-drop anywhere on the conversation
+(() => {
+  const chatEl = $('chat');
+  let depth = 0;
+  const hasFiles = (ev) => ev.dataTransfer && Array.from(ev.dataTransfer.types || []).includes('Files');
+  chatEl.addEventListener('dragenter', (ev) => { if (!hasFiles(ev)) return; ev.preventDefault(); depth++; chatEl.classList.add('drag-over'); });
+  chatEl.addEventListener('dragover', (ev) => { if (hasFiles(ev)) ev.preventDefault(); });
+  chatEl.addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) chatEl.classList.remove('drag-over'); });
+  chatEl.addEventListener('drop', async (ev) => {
+    if (!hasFiles(ev)) return;
+    ev.preventDefault(); depth = 0; chatEl.classList.remove('drag-over');
+    await uploadFiles(ev.dataTransfer.files);
+  });
+})();
+
+async function uploadFiles(fileList) {
+  if (!requireEngagement()) return;
+  const files = Array.from(fileList || []);
+  for (const file of files) {
     status('Ingesting ' + file.name + '…');
     const fd = new FormData();
     fd.append('file', file);
@@ -682,9 +830,8 @@ $('file-input').onchange = async () => {
       addMsg('assistant', `📄 **${esc(file.name)}** ingested: ${r.chunks_indexed} chunks indexed. Ask me to review it.`);
     } catch (e) { status('Upload failed: ' + e.message, true); }
   }
-  $('file-input').value = '';
   await refreshFiles();
-};
+}
 
 /* ---------- delete engagement dialog ---------- */
 const dlgDelEng = $('dlg-del-eng');
@@ -736,29 +883,26 @@ document.querySelectorAll('.dlg-close').forEach(btn => {
   });
 });
 
+function setFieldError(id, msg) {
+  $(id).setAttribute('aria-invalid', msg ? 'true' : 'false');
+  $(id + '-err').textContent = msg || '';
+}
 $('btn-new-eng').onclick = () => {
-  $('ne-client').style.borderColor = 'var(--border)';
-  $('ne-name').style.borderColor = 'var(--border)';
+  setFieldError('ne-client', ''); setFieldError('ne-name', '');
   dlgNewEng.showModal();
   $('ne-client').focus();
 };
 ['ne-client', 'ne-name'].forEach(id => {
-  $(id).addEventListener('input', () => {
-    if ($(id).value.trim()) $(id).style.borderColor = 'var(--border)';
-  });
+  $(id).addEventListener('input', () => { if ($(id).value.trim()) setFieldError(id, ''); });
 });
-$('ne-create').onclick = async () => {
+// a real <form>: Enter in any field submits; errors are announced in text
+$('ne-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
   const client = $('ne-client').value.trim(), name = $('ne-name').value.trim();
-  let valid = true;
-  if (!client) {
-    $('ne-client').style.borderColor = 'var(--err)';
-    valid = false;
-  } else { $('ne-client').style.borderColor = 'var(--border)'; }
-  if (!name) {
-    $('ne-name').style.borderColor = 'var(--err)';
-    valid = false;
-  } else { $('ne-name').style.borderColor = 'var(--border)'; }
-  if (!valid) return;
+  setFieldError('ne-client', client ? '' : 'Enter the client name.');
+  setFieldError('ne-name', name ? '' : 'Enter an engagement name.');
+  if (!client) { $('ne-client').focus(); return; }
+  if (!name) { $('ne-name').focus(); return; }
   try {
     const eng = await api('/engagements', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -769,8 +913,9 @@ $('ne-create').onclick = async () => {
     await loadEngagements();
     await activateEngagement(eng.id);
     status(`Engagement "${eng.name}" created and activated.`);
+    $('input').focus();
   } catch (e) { status('Create failed: ' + e.message, true); }
-};
+});
 
 $('btn-close-eng').onclick = async () => {
   if (!activeId) { status('No active engagement to close.', true); return; }
@@ -838,8 +983,8 @@ async function refreshModelDialog() {
     { key: 'osint', label: 'OSINT / CTI', roles: ['osint', 'cti'] },
   ];
   for (const group of roleGroups) {
-    const groupHeader = document.createElement('div');
-    groupHeader.style.cssText = 'font-size:12px;color:var(--muted);font-weight:600;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.5px';
+    const groupHeader = document.createElement('h4');
+    groupHeader.className = 'tier-group';
     groupHeader.textContent = group.label;
     list.appendChild(groupHeader);
     const groupTiers = Object.entries(tiers).filter(([id, t]) => {
@@ -854,17 +999,24 @@ async function refreshModelDialog() {
       continue;
     }
     for (const [id, t] of groupTiers) {
-      const div = document.createElement('div');
+      // real buttons: the old clickable <div>s were unreachable by keyboard
+      const div = document.createElement('button');
+      div.type = 'button';
       const isRec = suggestedTiers[group.key] === id;
       const isDisabled = t.min_vram_gb > 0 && hw.vram_gb < t.min_vram_gb;
       div.className = 'tier-opt' + (isDisabled ? ' disabled' : '');
+      div.setAttribute('aria-pressed', t.active ? 'true' : 'false');
+      if (isDisabled) {
+        div.setAttribute('aria-disabled', 'true');
+        div.title = `Needs about ${t.min_vram_gb} GB of GPU memory`;
+      }
       div.innerHTML = `
-        <div><div class="t-name">${esc(t.label)}
+        <span><span class="t-name">${esc(t.label)}
           ${isRec ? '<span class="tag rec">Recommended</span>' : ''}
           ${t.active ? '<span class="tag on">active</span>' : ''}
-        </div>
-        <div class="t-desc">${t.downloaded ? 'downloaded ✓' : 'will download from Hugging Face'}</div></div>
-        <div class="t-size">${t.size_gb} GB</div>`;
+        </span>
+        <span class="t-desc" style="display:block">${t.downloaded ? 'downloaded ✓' : 'will download from Hugging Face'}${isDisabled ? ' · needs more GPU memory' : ''}</span></span>
+        <span class="t-size">${esc(String(t.size_gb))} GB</span>`;
       div.onclick = () => pickTier(id, t, div, isDisabled);
       list.appendChild(div);
     }
@@ -946,10 +1098,13 @@ async function refreshHealth() {
     const h = await api('/health');
     const dot = $('status-dot');
     dot.className = h.status === 'ok' ? 'ok' : '';
-    dot.title = h.detail || 'Model ready';
+    // status in words as well as colour (WCAG 1.4.1)
+    $('status-text').textContent = h.status === 'ok' ? 'Model ready' : 'No model loaded';
+    $('status-wrap').title = h.detail || 'Model ready';
     if (h.status !== 'ok') status(h.detail || 'No model loaded yet — open Model.', false);
   } catch {
     $('status-dot').className = 'err';
+    $('status-text').textContent = 'Server unreachable';
   }
 }
 
@@ -1054,10 +1209,35 @@ input.addEventListener('input', () => {
   input.style.height = 'auto';
   input.style.height = Math.min(input.scrollHeight, 180) + 'px';
 });
-$('btn-send').onclick = send;
+/* ---------- narrow-window drawer + keyboard shortcuts ---------- */
+function closeNav() {
+  if (!document.body.classList.contains('nav-open')) return;
+  document.body.classList.remove('nav-open');
+  $('menu-btn').setAttribute('aria-expanded', 'false');
+}
+$('menu-btn').onclick = () => {
+  const open = document.body.classList.toggle('nav-open');
+  $('menu-btn').setAttribute('aria-expanded', String(open));
+  if (open) { const first = document.querySelector('#sidebar button'); if (first) first.focus(); }
+};
+// tapping the dimmed area beside the open drawer closes it
+$('main').addEventListener('click', (e) => {
+  if (document.body.classList.contains('nav-open') && !e.target.closest('#menu-btn')) closeNav();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.body.classList.contains('nav-open') && !document.querySelector('dialog[open]')) {
+    closeNav(); $('menu-btn').focus();
+  }
+  const t = e.target;
+  const typing = t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+  if (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey && !document.querySelector('dialog[open]') && !$('input').disabled) {
+    e.preventDefault(); $('input').focus();
+  }
+});
 
 /* startup */
 document.addEventListener('DOMContentLoaded', () => {
+  restoreEmptyState();
   $('role-select').value = currentRole;
   $('role-select').onchange = () => {
     currentRole = $('role-select').value;

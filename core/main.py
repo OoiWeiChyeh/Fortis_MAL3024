@@ -1,29 +1,28 @@
 import logging
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from .frameworks import seed_all_frameworks, FRAMEWORK_NAMES
 from engine import check_model_available
+from .security import LocalOriginGuard
 from .store import init_db
-from .routers import upload, chat, report, engagements
+from .routers import upload, chat, report, engagements, intel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Fortis — AI Cybersecurity Advisor", version="1.0.0")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# The UI is served same-origin, so no CORS policy is needed. The former
+# wildcard CORS let any web page read engagement data; the guard below
+# also blocks cross-site writes and DNS-rebinding (see core/security.py).
+app.add_middleware(LocalOriginGuard)
 
 app.include_router(engagements.router)
 app.include_router(upload.router)
 app.include_router(chat.router)
 app.include_router(report.router)
+app.include_router(intel.router)
 
 
 @app.on_event("startup")

@@ -43,6 +43,9 @@ def stub_llm(monkeypatch):
     monkeypatch.setattr("core.analysis.chat", fake_chat)
     monkeypatch.setattr("core.routers.chat.chat", fake_chat)
     monkeypatch.setattr("core.routers.chat.chat_stream", fake_chat_stream)
+    # LLM is faked: opt out of the no-model placeholder gate explicitly
+    # (previously satisfied only by a model selection leaked into the real data dir)
+    monkeypatch.setattr("core.report_intent.is_stub_backend", lambda: False)
 
 
 @pytest.fixture

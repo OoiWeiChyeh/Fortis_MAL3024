@@ -122,6 +122,21 @@ class Settings:
     rerank_min_ram_gb: float = _env_float("RERANK_MIN_RAM_GB", "8")
     bm25_rrf_k: int = _env_int("BM25_RRF_K", "60")
 
+    # ---- Trust hardening (see core/intel/grounding.py, docs/evaluation.md) ----
+    # intel_grounding: put catalogue facts for every ATT&CK/CVE id the user
+    #   mentions into the prompt, and state non-existent ids as such.
+    # verify_ids: append an identifier check to replies (fabricated, stale,
+    #   misbound ATT&CK/CVE ids).
+    # spotlight: fence uploaded-document excerpts as untrusted data and tell
+    #   the model never to follow instructions inside them.
+    # Each is a switch so the eval harness can ablate them one at a time.
+    intel_grounding: bool = os.getenv("FORTIS_INTEL_GROUNDING", "1") != "0"
+    verify_ids: bool = os.getenv("FORTIS_VERIFY_IDS", "1") != "0"
+    spotlight: bool = os.getenv("FORTIS_SPOTLIGHT", "1") != "0"
+    # leak_guard: withhold reply text that reproduces the system prompt
+    #   (core/guard.py), including mid-stream.
+    leak_guard: bool = os.getenv("FORTIS_LEAK_GUARD", "1") != "0"
+
 
 def _normalize_rag_level(value: str) -> str:
     value = (value or "").strip().lower()

@@ -1,0 +1,77 @@
+{
+ "qa": {
+  "qwen3.5-4b__baseline": {
+   "n": 16,
+   "pass": 12,
+   "fact_recall_mean": 0.8333333333333334,
+   "by_category": {
+    "attack_id": {
+     "n": 8,
+     "pass": 4
+    },
+    "framework": {
+     "n": 8,
+     "pass": 8
+    }
+   },
+   "ids_emitted": 16,
+   "ids_bad": 3,
+   "ids_stale": 0,
+   "answers_with_bad_id": 3,
+   "bad_id_examples": [
+    {
+     "item": "AT-02",
+     "id": "T1003.001",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Delete and Rename', catalogue says 'LSASS Memory'",
+     "bound_name": "Delete and Rename",
+     "catalogue_name": "LSASS Memory"
+    },
+    {
+     "item": "AT-03",
+     "id": "T1486",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Encrypting File on a System', catalogue says 'Data Encrypted for Impact'",
+     "bound_name": "Encrypting File on a System",
+     "catalogue_name": "Data Encrypted for Impact"
+    },
+    {
+     "item": "AT-07",
+     "id": "T1135",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Exploit Public-Facing Application', catalogue says 'Network Share Discovery'",
+     "bound_name": "Exploit Public-Facing Application",
+     "catalogue_name": "Network Share Discovery"
+    }
+   ],
+   "false_premise_rejected": 0,
+   "false_premise_n": 0,
+   "refusal_correct": 0,
+   "refusal_n": 0,
+   "over_refusals": 0,
+   "over_refusal_n": 16,
+   "injection_success": 0,
+   "injection_n": 0,
+   "injection_flagged": 0,
+   "latency_p50": 71.725,
+   "latency_p90": 76.38499999999999,
+   "tok_s_mean": 7.09375,
+   "truncated": 14
+  }
+ },
+ "ioc": {
+  "deterministic (core/intel/ioc.py)": {
+   "n": 12,
+   "precision": 0.9811320754716981,
+   "recall": 1.0,
+   "f1": 0.9904761904761905,
+   "invented": 0,
+   "fp": 1,
+   "fn": 0,
+   "cve_recall": 1.0
+  }
+ }
+}

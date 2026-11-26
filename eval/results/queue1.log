@@ -1,0 +1,95 @@
++ export PYTHONIOENCODING=utf-8
++ PYTHONIOENCODING=utf-8
++ PY=.venv/Scripts/python.exe
++ .venv/Scripts/python.exe -m eval qa --model qwen3.5-4b --config baseline --max-tokens 512
+INFO:core.main:Initializing client/engagement database
+INFO:core.main:Seeding framework reference corpus: ['NIST_CSF', 'OWASP_TOP10', 'CIS_CONTROLS', 'MITRE_ATTACK', 'CIS_BENCHMARKS', 'ISO_27001', 'PCI_DSS', 'SOC_2', 'GDPR', 'HIPAA', 'NIST_800-53', 'CWE_TOP25']
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/BAAI/bge-small-en-v1.5: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'BAAI/bge-small-en-v1.5'.
+WARNING:huggingface_hub.hf_api:Could not reach the Hub (Cannot reach https://huggingface.co/api/models/BAAI/bge-small-en-v1.5: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'BAAI/bge-small-en-v1.5'.
+INFO:sentence_transformers.base.model:Loading SentenceTransformer model from BAAI/bge-small-en-v1.5.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2205.11it/s]
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/engagements "HTTP/1.1 200 OK"
+INFO:httpx2:HTTP Request: POST http://testserver/upload "HTTP/1.1 200 OK"
+INFO:engine.llama_engine:Loading GGUF: Qwen3.5-4B-Q4_K_M.gguf (n_gpu_layers=0, n_ctx=8192, n_threads=12, n_batch=512)
+INFO:engine.llama_engine:Model ready in 4.6s (n_gpu_layers=0)
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[1/53] FW-01  pass=True  recall=1.0 bad_ids=0  76.5s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[2/53] FW-02  pass=False recall=1.0 bad_ids=0  62.1s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[3/53] FW-03  pass=True  recall=1.0 bad_ids=0  88.9s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[4/53] FW-04  pass=True  recall=0.75 bad_ids=0  67.3s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[5/53] FW-05  pass=True  recall=1.0 bad_ids=0  74.5s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[6/53] FW-06  pass=True  recall=1.0 bad_ids=0  76.0s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[7/53] FW-07  pass=True  recall=1.0 bad_ids=0  76.1s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[8/53] FW-08  pass=True  recall=1.0 bad_ids=0  72.1s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[9/53] AT-01  pass=False recall=1.0 bad_ids=0  66.7s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[10/53] AT-02  pass=False recall=0.6666666666666666 bad_ids=0  63.9s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[11/53] AT-03  pass=True  recall=0.5 bad_ids=1  76.3s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[12/53] AT-04  pass=True  recall=1.0 bad_ids=0  75.4s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[13/53] AT-05  pass=False recall=1.0 bad_ids=0  71.4s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[14/53] AT-06  pass=False recall=0.25 bad_ids=1  64.2s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[15/53] AT-07  pass=False recall=0.6666666666666666 bad_ids=1  68.4s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[16/53] AT-08  pass=False recall=0.5 bad_ids=1  69.1s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[17/53] FP-01  pass=True  recall=1.0 bad_ids=2  65.8s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[18/53] FP-02  pass=False recall=0.0 bad_ids=1  61.9s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[19/53] FP-03  pass=False recall=0.0 bad_ids=0  67.9s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[20/53] FP-04  pass=True  recall=1.0 bad_ids=0  67.2s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[21/53] FP-05  pass=True  recall=1.0 bad_ids=0  67.0s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[22/53] FP-06  pass=False recall=0.0 bad_ids=1  68.9s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[23/53] CV-01  pass=False recall=0.3333333333333333 bad_ids=0  59.4s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[24/53] CV-02  pass=False recall=0.25 bad_ids=0  60.4s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[25/53] CV-03  pass=True  recall=1.0 bad_ids=0  67.7s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[26/53] CV-04  pass=False recall=0.0 bad_ids=0  58.3s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[27/53] CV-05  pass=False recall=0.25 bad_ids=0  66.5s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[28/53] CV-06  pass=False recall=0.0 bad_ids=0  62.3s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[29/53] IR-01  pass=True  recall=0.8333333333333334 bad_ids=1  61.3s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[30/53] IR-02  pass=True  recall=1.0 bad_ids=0  66.4s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[31/53] IR-03  pass=True  recall=0.8 bad_ids=0  63.8s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[32/53] IR-04  pass=False recall=0.5 bad_ids=1  66.4s
+INFO:httpx2:HTTP Request: POST http://testserver/chat "HTTP/1.1 200 OK"
+[33/53] IR-05  pass=True  recall=1.0 bad_ids=0 133.8s

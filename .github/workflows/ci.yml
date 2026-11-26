@@ -1,0 +1,57 @@
+name: ci
+
+# Offline suite + deterministic evaluation gates on every push and PR.
+# No model, GPU or network access to Hugging Face is needed: tests run on the
+# stub LLM backend with hash-stub embeddings (desktop/tests/conftest.py).
+# Model-in-the-loop evaluation (python -m eval qa|redteam|triage) runs on
+# the analyst's machine; its results are committed under eval/results/.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      EMBEDDING_BACKEND: hash-stub
+      FORTIS_LLM_BACKEND: stub
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install dependencies (CPU-only torch)
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-dev.txt
+      - name: Offline test suite and evaluation gates
+        run: python -m pytest desktop/tests -q -p no:warnings
+      - name: Harness smoke test (stub backend, 6 QA items, red-team cases)
+        run: |
+          python -m eval qa --stub --embeddings hash-stub --only FW-01,AT-01,FP-01,LD-01,OS-01,PI-01 --out ci-out/qa
+          python -m eval ioc --stub --embeddings hash-stub --out ci-out/ioc
+      - name: Threat-intel catalogue freshness (report only)
+        shell: python
+        run: |
+          from core.intel.enrich import catalogue_versions
+          print("Vendored catalogues:", catalogue_versions())

@@ -1,0 +1,17 @@
+{
+ "commit": "a557302",
+ "dirty": true,
+ "python": "3.12.0",
+ "platform": "Windows-11-10.0.26300-SP0",
+ "cpu": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+ "llama_cpp": "0.3.36",
+ "gpu_offload": false,
+ "label": "stub__hardened",
+ "config": "hardened",
+ "rag_level": "standard",
+ "model_file": null,
+ "embeddings": "hash-stub",
+ "suite": "ioc",
+ "items": 12,
+ "wall_s": 0.0
+}

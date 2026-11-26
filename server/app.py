@@ -45,7 +45,7 @@ async def command(req: CommandRequest):
     """Slash-command passthrough from the UI (also usable headless)."""
     reply = orch.handle_command(req.text)
     if reply is None:
-        raise HTTPException(400, "Not a recognized command. Try /engagements, /new-engagement, /use, /whoami, /close-engagement.")
+        raise HTTPException(400, "Not a recognized command. Try /engagements, /new-engagement, /use, /whoami, /close-engagement, /report, /triage, /iocs.")
     return {"text": reply}
 
 

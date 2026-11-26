@@ -232,23 +232,26 @@ def test_build_chat_messages_with_grc_role_injects_preset():
 
 
 def test_build_chat_messages_with_none_role_uses_system_persona_only():
-    from core.rag import ROLE_PRESETS, build_chat_messages, SYSTEM_PERSONA
+    from core.rag import ROLE_PRESETS, build_chat_messages, SYSTEM_PERSONA, system_prompt
     
     messages = build_chat_messages("test-eng", "test message", role=None)
     system_content = messages[0]["content"]
     
-    assert system_content == SYSTEM_PERSONA
+    # persona (+ the untrusted-data rule when spotlighting is on), no preset
+    assert system_content == system_prompt(None)
+    assert system_content.startswith(SYSTEM_PERSONA)
     for role_preset in ROLE_PRESETS.values():
         assert role_preset not in system_content
 
 
 def test_build_chat_messages_with_bogus_role_uses_system_persona_only():
-    from core.rag import ROLE_PRESETS, build_chat_messages, SYSTEM_PERSONA
+    from core.rag import ROLE_PRESETS, build_chat_messages, SYSTEM_PERSONA, system_prompt
     
     messages = build_chat_messages("test-eng", "test message", role="bogus")
     system_content = messages[0]["content"]
     
-    assert system_content == SYSTEM_PERSONA
+    assert system_content == system_prompt(None)
+    assert system_content.startswith(SYSTEM_PERSONA)
     for role_preset in ROLE_PRESETS.values():
         assert role_preset not in system_content
 

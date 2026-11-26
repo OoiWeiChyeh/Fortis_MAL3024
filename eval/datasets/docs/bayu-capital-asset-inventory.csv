@@ -1,0 +1,19 @@
+asset_id,hostname,vendor,product,version,role,internet_facing,owner
+A-001,fw-edge-01,Palo Alto Networks,PAN-OS,10.2.8,Perimeter firewall with GlobalProtect remote-access portal,yes,Network
+A-002,adc-dmz-01,Citrix,NetScaler ADC,13.1-49.13,Remote-access gateway for staff (ICA proxy),yes,Network
+A-003,fgt-branch-jb,Fortinet,FortiOS,7.2.6,Johor Bahru branch firewall with SSL-VPN,yes,Network
+A-004,fgt-branch-pg,Fortinet,FortiOS,7.2.6,Penang branch firewall with SSL-VPN,yes,Network
+A-005,core-sw-01,Cisco,IOS XE,17.9.3,Core switch; ip http server enabled for legacy monitoring,no,Network
+A-006,bastion-01,OpenBSD Project,OpenSSH,9.6p1,Linux jump host for cloud administration,yes,Platform
+A-007,msp-remote-01,ConnectWise,ScreenConnect,23.9.7,On-premises remote support server used by the managed-service provider,yes,IT Service Desk
+A-008,ci-jenkins-01,Jenkins,Jenkins,2.426.2 LTS,Internal CI/CD controller,no,Engineering
+A-009,trader-ws-pool,RARLAB,WinRAR,6.22,Installed on the 140-seat trader workstation pool,no,Trading IT
+A-010,exch-01,Microsoft,Exchange Server,2019 CU14,Corporate mail,yes,IT Operations
+A-011,dc01,Microsoft,Windows Server,2022,Active Directory domain controller,no,IT Operations
+A-012,vc-01,VMware,vCenter Server,8.0 U2,Virtualisation management,no,Platform
+A-013,sql-core-01,Microsoft,SQL Server,2019,Core banking reporting database,no,Data
+A-014,web-portal-01,Nginx,nginx,1.24.0,Customer investment portal reverse proxy,yes,Digital
+A-015,hr-saas,Workday,Workday HCM,SaaS,HR system (vendor-hosted),yes,HR
+A-016,mail-gw,Proofpoint,Email Protection,SaaS,Inbound mail filtering,yes,IT Operations
+A-017,edr,CrowdStrike,Falcon,7.x,Endpoint detection and response on 1260 endpoints,no,SOC
+A-018,siem,Elastic,Elastic Security,8.15,SIEM,no,SOC
