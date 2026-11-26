@@ -95,3 +95,24 @@ def test_attach_suggestion_opens_picker_instead_of_sending_tip():
 def test_cti_mode_selectable():
     # core/rag.py defines a "cti" role preset; the UI previously could not pick it
     assert '<option value="cti">' in HTML
+
+
+def test_only_explicit_urls_become_links():
+    # NIST CSF ids such as PR.AC / PR.PT rendered as links to .ac/.pt domains
+    # (docs/evidence/14); a model-mentioned indicator must not be clickable
+    assert "md.linkify.set({ fuzzyLink: false, fuzzyEmail: false })" in JS
+
+
+def test_slash_command_replies_are_not_wiped():
+    # /iocs output vanished: every slash command reloaded the saved transcript
+    # (docs/evidence/25); only a switch of engagement may reload it now
+    assert "async function loadEngagements({ restore = true } = {})" in JS
+    assert "await loadEngagements({ restore: false });\n      if (activeId !== before) await restoreChatHistory();" in JS
+
+
+def test_selected_engagement_is_named_not_coloured():
+    # every engagement showed an "active" badge (its status), which read as
+    # "selected" and was announced as "active (active)" (docs/evidence/26)
+    assert "<span class=\"badge current\">current</span>" in JS
+    assert "e.status === 'active' ? 'open'" in JS
+    assert "(active)</span>" not in JS

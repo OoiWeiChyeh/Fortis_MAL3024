@@ -77,7 +77,8 @@ body {
 .eng-item:hover .del-btn, .eng-item:focus-within .del-btn { opacity: 1; }
 .badge { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: rgba(5,11,28,.6); border: 1px solid var(--border); }
 .badge.closed { color: var(--muted); }
-.badge.active { color: var(--ok); border-color: rgba(52,211,153,.45); }
+.badge.active { color: var(--muted); }  /* status "open": every engagement has it, so it must not look like a selection */
+.badge.current { color: var(--accent-ink); border-color: var(--accent-hi); margin-right: 6px; }
 #sidebar footer { padding: 12px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
 .empty-list { color: var(--muted); font-size: 13px; padding: 12px; line-height: 1.5; }
 
@@ -153,6 +154,7 @@ button:disabled, button[aria-disabled="true"] { opacity: .5; cursor: not-allowed
 .bubble pre code { background: none; border: none; padding: 0; font-size: 13px; }
 .bubble table { border-collapse: collapse; margin: 10px 0; width: 100%; font-size: 13px; }
 .bubble th, .bubble td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; }
+.bubble td code { white-space: nowrap; }  /* ATT&CK and CVE ids never break mid-id */
 .bubble th { background: var(--bg3); }
 .bubble tbody tr:nth-child(even) { background: rgba(255,255,255,.025); }
 .bubble tbody tr:hover { background: rgba(59,130,246,.08); }
@@ -465,6 +467,10 @@ if (!window.markdownit) {
   window.markdownit = () => ({ render: (t) => esc(t).replace(/\n/g, '<br>') });
 }
 const md = window.markdownit({ linkify: true, breaks: true });
+// Only explicit http(s):// URLs become links. Fuzzy linking turned control
+// ids into live links (NIST CSF "PR.AC", "PR.PT" are valid .ac/.pt domains)
+// and would make any indicator a model mentions (evil.top) clickable.
+if (md.linkify && md.linkify.set) md.linkify.set({ fuzzyLink: false, fuzzyEmail: false });
 
 let mermaidReady = false;
 if (window.mermaid) {
@@ -579,7 +585,7 @@ async function enhanceMermaid(container) {
 }
 
 /* ---------- engagements ---------- */
-async function loadEngagements() {
+async function loadEngagements({ restore = true } = {}) {
   try {
     engagements = await api('/engagements');
     try {
@@ -589,7 +595,7 @@ async function loadEngagements() {
     renderEngagements();
     updateComposerState();
     await refreshFiles();  // the title read "No engagement selected" on load even with one active
-    await restoreChatHistory();
+    if (restore) await restoreChatHistory();
   } catch (e) { status('Failed to load engagements: ' + e.message, true); }
 }
 
@@ -610,7 +616,7 @@ function renderEngagements() {
       <button type="button" class="eng-select" ${isActive ? 'aria-current="true"' : ''}>
         <span class="client">${esc(e.client_name)}</span>
         <span class="name">${esc(e.name)}</span>
-        <span class="meta"><span class="badge ${esc(e.status)}">${esc(e.status)}</span>${isActive ? '<span class="sr-only">(active)</span>' : ''}</span>
+        <span class="meta">${isActive ? '<span class="badge current">current</span>' : ''}<span class="badge ${esc(e.status)}">${e.status === 'active' ? 'open' : esc(e.status)}</span></span>
       </button>
       <button type="button" class="del-btn" aria-label="Delete engagement ${esc(e.client_name)} — ${esc(e.name)}" title="Delete engagement"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" focusable="false"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`;
     li.querySelector('.eng-select').onclick = () => { activateEngagement(e.id); closeNav(); };
@@ -761,7 +767,13 @@ async function send() {
         body: JSON.stringify({ text }),
       });
       addMsg('assistant', r.text);
-      await loadEngagements(); await refreshFiles();
+      // Reload the transcript only when the command switched engagement
+      // (/use, /new-engagement, /close-engagement). Restoring it after every
+      // command wiped replies that are not persisted (/iocs, /whoami,
+      // /engagements) the moment they appeared.
+      const before = activeId;
+      await loadEngagements({ restore: false });
+      if (activeId !== before) await restoreChatHistory();
     } catch (e) { addMsg('assistant', 'Error: ' + e.message); }
     status('');
     busy = false;

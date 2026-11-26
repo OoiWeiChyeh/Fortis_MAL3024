@@ -65,7 +65,7 @@ def test_deterministic_priority_and_exposure_match_gold(adv):
 
 def test_inferred_techniques_must_exist_and_quote_the_advisory():
     llm = FakeLLM(techniques=[
-        {"id": "T1566.001", "evidence": "carries a RAR archive (Strategies_Q4.rar)"},  # ok
+        {"id": "T1566.001", "evidence": "Emails promising Q4 trading strategies carry a RAR archive"},  # ok
         {"id": "T1999", "evidence": "carries a RAR archive"},                           # fabricated
         {"id": "T1562.001", "evidence": "carries a RAR archive"},                       # revoked
         {"id": "T1204.002", "evidence": "the moon landing was staged"},                 # ungrounded
@@ -234,3 +234,61 @@ def test_iocs_slash_command():
     out = Orchestrator().handle_command("/iocs hxxps://evil[.]top/x and CVE-2024-3400")
     assert "evil[.]top" in out and "KEV" in out
     assert "Usage" in Orchestrator().handle_command("/iocs")
+
+
+# ---- refinements from the live evidence run (docs/evidence/17-19) ----------
+
+def test_quote_must_describe_the_technique_not_just_exist():
+    text = _adv("ADV-05")
+    # accepted in the live run although the quotes support neither technique
+    assert T.evidence_grounded("run code through crafted HTTP requests", text)
+    assert not T.evidence_supports("run code through crafted HTTP requests", "T1059.001")
+    assert not T.evidence_supports("SSL-VPN out-of-bounds write exploited", "T1132.001")
+    # realistic supporting quotes still pass
+    assert T.evidence_supports("a hidden PowerShell command downloads a loader", "T1059.001")
+    assert T.evidence_supports("deleting volume shadow copies", "T1490")
+    assert T.evidence_supports("Emails promising Q4 trading strategies carry a RAR archive", "T1566.001")
+
+
+def test_irrelevant_quote_is_rejected_with_a_reason():
+    llm = FakeLLM(techniques=[{"id": "T1132.001", "evidence": "SSL-VPN out-of-bounds write exploited"}])
+    r = _run(_adv("ADV-05"), llm)
+    assert "T1132.001" not in {t["id"] for t in r.techniques}
+    assert {"id": "T1132.001", "reason": "quote does not describe this technique"}.items() <= r.dropped_techniques[0].items()
+
+
+def test_truncated_narrative_is_trimmed_conservatively():
+    live = "### Hunting and detection\n- Monitor T1190 exploitation attempts.\n- Search for **"
+    assert T.trim_incomplete(live) == "### Hunting and detection\n- Monitor T1190 exploitation attempts."
+    assert T.trim_incomplete("### Actions\n- Approve CR-2211") == "### Actions\n- Approve CR-2211"  # complete bullet kept
+    assert T.trim_incomplete("### A\ntext.\n### Hunting") == "### A\ntext."
+    assert T.trim_incomplete("Search for **") == "Search for **"  # never trimmed to nothing
+
+
+def test_brief_forbids_claiming_the_client_is_compromised():
+    assert "never say or imply the client is already compromised" in T._BRIEF_SYSTEM
+
+
+def test_documentation_addresses_are_not_called_internal():
+    r = _run(_adv("ADV-05"), FakeLLM(), infer=False)
+    notes = {i["value"]: i["notes"] for i in r.iocs}
+    assert notes["203.0.113.88"] == ["documentation range (RFC 5737)"]
+    assert "`T1190`" in r.markdown  # ids render as code (no mid-id wrapping)
+
+
+def test_brief_uses_no_raw_html():
+    # the chat renderer escapes HTML, so <details> showed as literal text
+    r = _run(_adv("ADV-05"), FakeLLM(), infer=False)
+    assert "<details" not in r.markdown and "</" not in r.markdown
+    assert "### Agent trace" in r.markdown
+
+
+def test_iocs_command_is_kept_in_the_engagement_record():
+    from core import store
+    from server.orchestration import Orchestrator
+    o = Orchestrator()
+    eng = o.create_engagement("Record Co", "iocs history")
+    o.activate(eng["id"])
+    out = o.handle_command("/iocs C2 at hxxps://evil[.]top/x")
+    turns = store.get_chat_history(eng["id"])
+    assert turns[-2]["content"].startswith("/iocs") and turns[-1]["content"] == out

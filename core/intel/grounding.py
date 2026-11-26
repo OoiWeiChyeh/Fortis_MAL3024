@@ -124,12 +124,24 @@ def technique_names(tid: str) -> List[str]:
     return names
 
 
+# pre-v16 tactic names models still use -> the v20.1 tactics that replaced them
+_TACTIC_ALIASES = {"defense evasion": {"stealth", "defense impairment"},
+                   "defence evasion": {"stealth", "defense impairment"}}
+
+
 def _name_matches(candidate: str, tid: str) -> bool:
     cand = _tokens(candidate)
     if not cand:
         return True  # nothing identifying to compare
-    if candidate.strip().lower() in _tactic_names():
-        return True
+    label = " ".join(candidate.strip().lower().replace("-", " ").split())
+    if label in _tactic_names():
+        # A tactic is a valid label only if it is one of THIS technique's
+        # tactics. "T1550.001 (Credential Access)" from a real answer passed
+        # before (any tactic was accepted), and would still pass the word
+        # overlap below via "Access" in "Application Access Token".
+        own = {t.replace("-", " ") for t in attack_catalogue()["techniques"][tid]["tactics"]}
+        own |= {attack_catalogue()["tactics"].get(t.replace(" ", "-"), {}).get("name", "").lower() for t in own}
+        return label in own or bool(_TACTIC_ALIASES.get(label, set()) & own)
     for name in technique_names(tid):
         ref = _tokens(name)
         if not ref:
@@ -248,6 +260,7 @@ def _check_technique(tid: str, text: str, start: int, end: int) -> IdCheck:
 
 
 _SENT_BREAK = re.compile(r"(?<=[.!?])\s+(?=[A-Z*|#-])|\n")
+_NEGATION = re.compile(r"\b(not|never|no longer|isn't|doesn't|unrelated|rather than|instead of|confused with|mistaken)\b", re.I)
 
 
 def _sentence_start(text: str, start: int) -> int:
@@ -270,16 +283,29 @@ def _check_cve(cve: str, year: int, text: str, start: int, end: int, today: date
     kev = kev_catalogue()["vulnerabilities"].get(cve)
     if not kev:
         return IdCheck(cve, "cve", "unverified", "not in the CISA KEV snapshot (cannot confirm offline)")
-    window = _sentence_around(text, start, end).lower()
+    sentence = _sentence_around(text, start, end)
+    window = sentence.lower()
     pos = start - _sentence_start(text, start)
     vendor = kev["vendor"].lower()
     product_tokens = {w for w in re.findall(r"[a-z0-9]{4,}", kev["product"].lower())}
     named = {}
-    for v in _kev_vendors():
-        m = re.search(r"\b" + re.escape(v) + r"\b", window)
+    for v, canonical in _kev_vendors().items():
+        # A WRONG vendor must appear as the proper noun KEV spells (case-
+        # sensitive): KEV lists vendors called "Daemon", "Zoom", "Linux", and
+        # "the SSL-VPN daemon" in a real triage note was read as a
+        # misattribution (docs/evidence/18).
+        m = re.search(r"\b" + re.escape(canonical) + r"\b", sentence)
         if m:
             named[v] = abs(m.start() - pos)
     right = vendor in window or any(re.search(r"\b" + re.escape(p) + r"\b", window) for p in product_tokens)
+    # nicknames built on the product name: "Log4Shell" for Log4j2
+    right = right or any(re.search(r"\b" + re.escape(p[:4]), window) for p in product_tokens if len(p) >= 5)
+    # A negated mention is not an attribution: "Log4Shell (CVE-2021-44228)
+    # does not affect ... Microsoft Exchange" is a correct answer that was
+    # flagged in the audit of the baseline run (docs/evaluation.md).
+    if _NEGATION.search(window):
+        return IdCheck(cve, "cve", "valid", "in CISA KEV (negated mention not judged)", None,
+                       f"{kev['vendor']} {kev['product']}")
     # Only call it misbound when the sentence names some *other* KEV vendor
     # next to the id and never the right vendor or product.
     if named and not right and not any(vendor in n or n in vendor for n in named):

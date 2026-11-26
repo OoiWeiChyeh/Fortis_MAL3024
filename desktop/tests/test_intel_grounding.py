@@ -140,3 +140,36 @@ def test_chat_reply_gets_identifier_check(monkeypatch):
     assert "does not exist" in chat_router.verification_suffix("Use T1999 now")
     monkeypatch.setattr(settings, "verify_ids", False)
     assert chat_router.verification_suffix("Use T1999 now") == ""
+
+
+def test_tactic_label_must_be_one_of_the_techniques_own_tactics():
+    # real answer captured in docs/evidence/15: the footer said "verified"
+    # because any tactic name was accepted as a label for any technique
+    real = "MITRE ATT&CK, T1078 (Valid Accounts) / T1550.001 (Credential Access): Impossible travel"
+    assert _statuses(real) == {"T1078": "valid", "T1550.001": "misbound"}
+    assert _statuses("T1566 (Execution)")["T1566"] == "misbound"
+    assert _statuses("Initial Access (T1190)")["T1190"] == "valid"
+    assert _statuses("T1003.001 (Credential Access)")["T1003.001"] == "valid"
+    # pre-v16 name, split into stealth / defense-impairment in ATT&CK v20.1
+    assert _statuses("T1027 (Defense Evasion)")["T1027"] == "valid"
+
+
+def test_common_word_vendor_is_not_a_misattribution():
+    # KEV lists a vendor called "Daemon"; a live triage note said "through the
+    # SSL-VPN daemon" next to a Fortinet CVE and was flagged (docs/evidence/18)
+    live = ("Bayu Capital Berhad is exposed via CVE-2024-21762 on its two branch firewalls, allowing "
+            "attackers to execute code through the SSL-VPN daemon.")
+    assert _statuses(live)["CVE-2024-21762"] == "valid"
+    assert _statuses("CVE-2024-3400 is a Fortinet FortiOS flaw.")["CVE-2024-3400"] == "misbound"
+
+
+def test_cve_audit_cases_from_the_baseline_run():
+    # real sentences from the Qwen3.5-4B baseline run, audited by hand:
+    # genuine misattributions stay flagged ...
+    assert _statuses("**CVE-2024-3400** is a critical vulnerability in **Microsoft Edge** (and related "
+                     "Chromium-based browsers) discovered in late 2024.")["CVE-2024-3400"] == "misbound"
+    assert _statuses("CVE-2023-34362 exploits a buffer overflow in the `mod_proxy` module of Apache HTTP "
+                     "Server.")["CVE-2023-34362"] == "misbound"
+    # ... while a correct, negated statement is no longer flagged
+    assert _statuses("**Log4Shell (CVE-2021-44228) does not directly affect the Outlook Web Access (OWA) "
+                     "component of Microsoft Exchange Server.**")["CVE-2021-44228"] == "valid"

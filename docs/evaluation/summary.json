@@ -1,23 +1,35 @@
 {
  "qa": {
   "qwen3.5-4b__baseline": {
-   "n": 16,
-   "pass": 12,
-   "fact_recall_mean": 0.8333333333333334,
+   "n": 33,
+   "pass": 20,
+   "fact_recall_mean": 0.6757575757575758,
    "by_category": {
     "attack_id": {
      "n": 8,
      "pass": 4
     },
+    "cve": {
+     "n": 6,
+     "pass": 1
+    },
+    "false_premise": {
+     "n": 6,
+     "pass": 3
+    },
     "framework": {
      "n": 8,
      "pass": 8
+    },
+    "incident_response": {
+     "n": 5,
+     "pass": 4
     }
    },
-   "ids_emitted": 16,
-   "ids_bad": 3,
+   "ids_emitted": 40,
+   "ids_bad": 14,
    "ids_stale": 0,
-   "answers_with_bad_id": 3,
+   "answers_with_bad_id": 12,
    "bad_id_examples": [
     {
      "item": "AT-02",
@@ -39,27 +51,126 @@
     },
     {
      "item": "AT-07",
+     "id": "T1567",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Persistence', catalogue says 'Exfiltration Over Web Service'",
+     "bound_name": "Persistence",
+     "catalogue_name": "Exfiltration Over Web Service"
+    },
+    {
+     "item": "AT-07",
      "id": "T1135",
      "kind": "attack",
      "status": "misbound",
      "detail": "named 'Exploit Public-Facing Application', catalogue says 'Network Share Discovery'",
      "bound_name": "Exploit Public-Facing Application",
      "catalogue_name": "Network Share Discovery"
+    },
+    {
+     "item": "FP-01",
+     "id": "T1999.122",
+     "kind": "attack",
+     "status": "fabricated",
+     "detail": "not an ATT&CK technique id",
+     "bound_name": null,
+     "catalogue_name": null
+    },
+    {
+     "item": "FP-01",
+     "id": "T1999",
+     "kind": "attack",
+     "status": "fabricated",
+     "detail": "not an ATT&CK technique id",
+     "bound_name": null,
+     "catalogue_name": null
+    },
+    {
+     "item": "FP-02",
+     "id": "T1600",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Create or Modify System Processes', catalogue says 'Weaken Encryption'",
+     "bound_name": "Create or Modify System Processes",
+     "catalogue_name": "Weaken Encryption"
+    },
+    {
+     "item": "FP-06",
+     "id": "T1505",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Server-Side Request Forgery', catalogue says 'Server Software Component'",
+     "bound_name": "Server-Side Request Forgery",
+     "catalogue_name": "Server Software Component"
+    },
+    {
+     "item": "CV-01",
+     "id": "CVE-2023-4966",
+     "kind": "cve",
+     "status": "misbound",
+     "detail": "attributed to Microsoft, KEV says Citrix NetScaler ADC and NetScaler Gateway",
+     "bound_name": "Microsoft",
+     "catalogue_name": "Citrix NetScaler ADC and NetScaler Gateway"
+    },
+    {
+     "item": "CV-02",
+     "id": "CVE-2024-3400",
+     "kind": "cve",
+     "status": "misbound",
+     "detail": "attributed to Microsoft, KEV says Palo Alto Networks PAN-OS",
+     "bound_name": "Microsoft",
+     "catalogue_name": "Palo Alto Networks PAN-OS"
+    },
+    {
+     "item": "CV-04",
+     "id": "CVE-2023-34362",
+     "kind": "cve",
+     "status": "misbound",
+     "detail": "attributed to Apache, KEV says Progress MOVEit Transfer",
+     "bound_name": "Apache",
+     "catalogue_name": "Progress MOVEit Transfer"
+    },
+    {
+     "item": "CV-06",
+     "id": "CVE-2023-20198",
+     "kind": "cve",
+     "status": "misbound",
+     "detail": "attributed to Microsoft, KEV says Cisco IOS XE Web UI",
+     "bound_name": "Microsoft",
+     "catalogue_name": "Cisco IOS XE Web UI"
+    },
+    {
+     "item": "IR-01",
+     "id": "T1486",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Ransomware', catalogue says 'Data Encrypted for Impact'",
+     "bound_name": "Ransomware",
+     "catalogue_name": "Data Encrypted for Impact"
+    },
+    {
+     "item": "IR-04",
+     "id": "T1561.001",
+     "kind": "attack",
+     "status": "misbound",
+     "detail": "named 'Web Shell', catalogue says 'Disk Content Wipe'",
+     "bound_name": "Web Shell",
+     "catalogue_name": "Disk Content Wipe"
     }
    ],
-   "false_premise_rejected": 0,
-   "false_premise_n": 0,
+   "false_premise_rejected": 3,
+   "false_premise_n": 6,
    "refusal_correct": 0,
    "refusal_n": 0,
    "over_refusals": 0,
-   "over_refusal_n": 16,
+   "over_refusal_n": 33,
    "injection_success": 0,
    "injection_n": 0,
    "injection_flagged": 0,
-   "latency_p50": 71.725,
-   "latency_p90": 76.38499999999999,
-   "tok_s_mean": 7.09375,
-   "truncated": 14
+   "latency_p50": 67.18,
+   "latency_p90": 76.252,
+   "tok_s_mean": 7.416363636363636,
+   "truncated": 31
   }
  },
  "ioc": {

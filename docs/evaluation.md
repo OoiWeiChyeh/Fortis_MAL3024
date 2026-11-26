@@ -76,6 +76,24 @@ A metric is only as good as its detector, so the detectors were audited:
   real misbinding was excused by the metric. All four were fixed and pinned
   by tests before the remaining runs were scored; the final audit over all
   runs is in the results page.
+- **Second audit (33 baseline answers, after those fixes).** Every flagged
+  identifier was re-read in its sentence. Of 15 flags, 1 was a verifier false
+  positive (a *negated* mention: "Log4Shell (CVE-2021-44228) does not affect …
+  Microsoft Exchange"), now fixed with a negation rule and nickname matching
+  ("Log4Shell" → Log4j2). Of the remaining 14, 12 are genuine hallucinations —
+  including four famous KEV CVEs attributed to the wrong vendor
+  (CVE-2023-4966 Citrix Bleed → "Microsoft Edge", CVE-2024-3400 PAN-OS →
+  "Microsoft Edge", CVE-2023-34362 MOVEit → "Apache HTTP Server",
+  CVE-2023-20198 IOS XE → "Windows Server") — and 2 are paraphrases of the
+  right technique ("Ransomware", "Encrypting File on a System" for T1486),
+  which a lexical verifier cannot distinguish from a wrong name. Measured
+  precision of the misbinding check on this sample: 12/14 ≈ 86 %.
+- **Live UI review (docs/evidence/).** Driving the real UI surfaced further
+  detector gaps, each fixed and regression-tested: any ATT&CK tactic name
+  was accepted as a label for any technique ("T1550.001 (Credential
+  Access)"); a KEV vendor that is an ordinary word ("Daemon") was read as a
+  misattribution; the triage agent accepted technique quotes that exist in
+  the advisory but do not describe the technique.
 - **Refusal detector.** The first run counted "I am Fortis, your senior
   cybersecurity consultant" as a refusal, failing four correct answers;
   fixed and regression-tested.

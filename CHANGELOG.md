@@ -3,6 +3,26 @@
 Changes made in this fork on top of upstream `kenobicjj/Fortis` @ `20dfe52`.
 Dates are commit dates; see `git log` for the full record.
 
+## Findings from the live evidence run (docs/evidence/)
+
+Driving the real UI on the local Qwen3.5-4B model surfaced the following;
+each is fixed and pinned by a regression test built from the captured output.
+
+### Fixed
+- **Identifier verifier:** a tactic name was accepted as a label for any technique ("T1550.001 (Credential Access)" passed); it must now be one of that technique's own tactics, with the pre-v16 "Defense Evasion" mapped to its v20.1 successors.
+- **Identifier verifier:** CISA KEV vendor names that are ordinary words ("Daemon") caused false misattributions; wrong vendors now match only as the proper noun KEV spells.
+- **Identifier verifier:** a negated mention ("Log4Shell does not affect … Microsoft Exchange") was flagged as a misattribution; negated sentences are not judged, and nicknames built on the product name ("Log4Shell") count as the right product.
+- **Triage agent:** technique suggestions whose quote exists in the advisory but does not describe the technique are rejected ("quote does not describe this technique").
+- **Triage agent:** the narrative may no longer state or imply the client is already compromised; text cut off by the token limit is trimmed conservatively; the agent trace is a Markdown section instead of raw HTML the chat displayed literally; ids render as code and no longer wrap.
+- **IOC notes:** RFC 5737 documentation addresses are labelled as such instead of "private/reserved".
+- **Chat UI:** NIST control ids such as "PR.AC"/"PR.PT" were rendered as links to .ac/.pt websites; only explicit http(s) URLs are linked now.
+- **Chat UI:** replies to slash commands that are not stored (`/iocs`, `/whoami`, `/engagements`) vanished because every command reloaded the saved transcript; it now reloads only when the engagement changes. `/iocs` results are also kept in the engagement record.
+- **Sidebar:** every engagement showed an "active" badge (its status), which read as the selection; the selected one is labelled "current" and the status reads "open".
+
+### Added
+- `eval/validate_exports.py`: validates triage exports with the reference parsers (OASIS `stix2`, SigmaHQ `pySigma`).
+- `docs/evidence/`: 30 captioned screenshots with an index.
+
 ## Model picker usability and CUDA detection
 
 ### Changed

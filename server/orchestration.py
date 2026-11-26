@@ -164,7 +164,16 @@ class Orchestrator:
                 extra = ", ".join(i["notes"])
             rows.append(f"| {i['type']} | `{defang(i['value'], i['type'])}` | {extra} |")
         head = f"**{len(found)} indicators** (ATT&CK v{v['attack']}, CISA KEV {v['kev']}):"
-        return head + "\n\n" + "\n".join(rows)
+        reply = head + "\n\n" + "\n".join(rows)
+        # keep the extraction in the engagement's record, like /triage does
+        eng = self.active_engagement()
+        if eng:
+            try:
+                store.append_chat_message(eng["id"], "user", "/iocs " + (text[:200] + ("..." if len(text) > 200 else "")))
+                store.append_chat_message(eng["id"], "assistant", reply)
+            except Exception:
+                pass
+        return reply
 
     def _triage_cmd(self, body: str) -> str:
         body = body.strip()

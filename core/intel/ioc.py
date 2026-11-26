@@ -79,6 +79,7 @@ _VERSION_PREFIX_RE = re.compile(
     r"(?:\s+(?:string|number|no\.?|id))?(?:\s*(?:is|was|=|:))?\s*$", re.I)
 _TRAILING_PUNCT = ".,;:!?)]}>'\""
 _HASH_LENGTHS = {32: "md5", 40: "sha1", 64: "sha256"}
+_DOC_NETS = tuple(ipaddress.ip_network(n) for n in ("192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24"))
 
 
 @dataclass
@@ -243,7 +244,15 @@ def extract_iocs(text: str, today: Optional[date] = None) -> List[IOC]:
             continue
         if _is_mask(ip):
             continue
-        notes = ["private/reserved"] if (ip.is_private or ip.is_reserved or ip.is_loopback) else []
+        if any(ip in n for n in _DOC_NETS):
+            # Python counts RFC 5737 as "private", but advisories use these
+            # ranges for real-world indicators in examples; calling them
+            # internal misled the triage brief (docs/evidence/18)
+            notes = ["documentation range (RFC 5737)"]
+        elif ip.is_private or ip.is_reserved or ip.is_loopback:
+            notes = ["private/reserved"]
+        else:
+            notes = []
         out.add("ipv4", str(ip), work, m.start(), m.end(), notes)
 
     for m in _IPV6_RE.finditer(work):
